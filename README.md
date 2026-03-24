@@ -1,187 +1,220 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gugnani | Physics & Design</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #f4f4f0;
-            --text-dark: #111;
-            --card-radius: 32px;
-            --border-heavy: 3px solid #111;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio</title>
 
-        body {
-            font-family: 'Space Grotesk', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-dark);
-            margin: 0;
-            padding: 5% 10%;
-            overflow-x: hidden;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
-        /* The "Loud" Header */
-        .hero {
-            margin-bottom: 80px;
-            max-width: 1000px;
-        }
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-        .role-tag {
-            display: inline-block;
-            font-size: 1.2rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            border: var(--border-heavy);
-            border-radius: 50px;
-            padding: 8px 24px;
-            margin-bottom: 30px;
-            background-color: #ffd700; /* Pop of color */
-        }
+body {
+  font-family: 'Inter', sans-serif;
+  background: #ffffff;
+  color: #111;
+}
 
-        h1 {
-            font-size: clamp(3rem, 6vw, 5.5rem);
-            line-height: 1.05;
-            letter-spacing: -0.04em;
-            margin: 0 0 30px 0;
-        }
+/* HEADER */
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 25px 60px;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+}
 
-        .sub-text {
-            font-size: 1.5rem;
-            line-height: 1.4;
-            max-width: 600px;
-            font-weight: 600;
-        }
+.logo {
+  font-weight: 600;
+}
 
-        /* The Staggered Grid */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 40px;
-            align-items: start;
-        }
+nav a {
+  margin-left: 25px;
+  text-decoration: none;
+  color: black;
+  font-size: 14px;
+}
 
-        /* Push every even card down slightly for a staggered look */
-        @media (min-width: 768px) {
-            .grid article:nth-child(even) {
-                margin-top: 60px;
-            }
-        }
+/* HERO */
+.hero {
+  padding: 120px 60px;
+}
 
-        /* Playful Project Cards */
-        .card {
-            background: #fff;
-            border: var(--border-heavy);
-            border-radius: var(--card-radius);
-            padding: 24px;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            position: relative;
-            box-shadow: 8px 8px 0px #111; /* Brutalist shadow */
-        }
+.hero h1 {
+  font-size: 48px;
+  font-weight: 400;
+}
 
-        .card:hover {
-            transform: translate(-4px, -4px);
-            box-shadow: 12px 12px 0px #111;
-        }
+.hero p {
+  margin-top: 10px;
+  font-size: 18px;
+  color: #555;
+}
 
-        .card-img-placeholder {
-            width: 100%;
-            height: 250px;
-            border-radius: 20px;
-            border: 2px solid #111;
-            margin-bottom: 20px;
-            object-fit: cover;
-        }
+/* PROJECTS */
+.projects {
+  padding: 80px 60px;
+}
 
-        /* Custom colors for different cards */
-        .c-blue { background-color: #a7c7e7; }
-        .c-green { background-color: #b5e48c; }
-        .c-pink { background-color: #ffb5a7; }
-        .c-purple { background-color: #cdb4db; }
+.project {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 120px;
+  flex-wrap: wrap;
+}
 
-        .card h3 {
-            font-size: 1.8rem;
-            margin: 0 0 10px 0;
-            line-height: 1.1;
-        }
+.project-text {
+  width: 45%;
+  min-width: 300px;
+}
 
-        .card p {
-            font-size: 1.1rem;
-            margin-bottom: 30px;
-        }
+.project-text h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
 
-        /* Pill-shaped Tags */
-        .tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
+.project-text p {
+  color: #555;
+}
 
-        .tag {
-            font-size: 0.85rem;
-            font-weight: 700;
-            border: 2px solid #111;
-            border-radius: 50px;
-            padding: 6px 16px;
-            background: #fff;
-        }
-    </style>
+.project-image {
+  width: 45%;
+  min-width: 300px;
+  height: 250px;
+  background: #eaeaea;
+  border-radius: 10px;
+}
+
+/* ABOUT */
+.about {
+  padding: 80px 60px;
+  max-width: 700px;
+}
+
+/* CONTACT */
+.contact {
+  padding: 80px 60px;
+}
+
+/* FOOTER */
+footer {
+  padding: 40px;
+  text-align: center;
+  background: #f5f5f5;
+  margin-top: 60px;
+}
+
+/* HOVER EFFECT */
+.project:hover {
+  transform: translateY(-5px);
+  transition: 0.3s ease;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  header {
+    padding: 20px;
+  }
+
+  .hero {
+    padding: 80px 20px;
+  }
+
+  .projects, .about, .contact {
+    padding: 60px 20px;
+  }
+
+  .project {
+    flex-direction: column;
+  }
+
+  .project-text, .project-image {
+    width: 100%;
+  }
+}
+</style>
+
 </head>
 <body>
 
-    <section class="hero">
-        <div class="role-tag">Physicist & Writer</div>
-        <h1>Hi, 👋 I am Gugnani & <br> welcome to the inside of my brain!</h1>
-        <div class="sub-text">
-            It is analytical, curious and busy. Take a peek at what I'm working on when I am not distracted by my Persian cat. 🐈
-        </div>
-    </section>
+<header>
+  <div class="logo">Your Name</div>
+  <nav>
+    <a href="#projects">Projects</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
 
-    <section class="grid">
-        
-        <article class="card">
-            <div class="card-img-placeholder c-blue"></div>
-            <h3>Boron-Nitride Encapsulated Graphene</h3>
-            <p>Recent publication in Physical Review Letters detailing dynamically tunable hydrodynamic transport and the physics of fluidic electron flow.</p>
-            <div class="tags">
-                <span class="tag">PRL Paper</span>
-                <span class="tag">2D Materials</span>
-                <span class="tag">Research</span>
-            </div>
-        </article>
+<section class="hero">
+  <h1>Designer / Researcher</h1>
+  <p>Creating thoughtful digital experiences.</p>
+</section>
 
-        <article class="card">
-            <div class="card-img-placeholder c-green"></div>
-            <h3>Bambootronics</h3>
-            <p>Interdisciplinary research and upcoming presentation for the Bamboo Beyond Borders 2026 symposium.</p>
-            <div class="tags">
-                <span class="tag">Symposium</span>
-                <span class="tag">Experimental Physics</span>
-            </div>
-        </article>
+<section id="projects" class="projects">
 
-        <article class="card">
-            <div class="card-img-placeholder c-pink"></div>
-            <h3>Science Communication</h3>
-            <p>Translating the complexities of gas flow, Knudsen experiments, and condensed matter into engaging technical writing.</p>
-            <div class="tags">
-                <span class="tag">Content Strategy</span>
-                <span class="tag">Technical Writing</span>
-            </div>
-        </article>
+  <div class="project">
+    <div class="project-text">
+      <h2>CLO 360°</h2>
+      <p>Mixed reality fashion design system exploring gesture-based workflows.</p>
+    </div>
+    <div class="project-image"></div>
+  </div>
 
-        <article class="card">
-            <div class="card-img-placeholder c-purple"></div>
-            <h3>RPGR2025 Toyama</h3>
-            <p>Preparing to engage with the global condensed matter community on the latest advancements in graphene research in Japan.</p>
-            <div class="tags">
-                <span class="tag">Conference</span>
-                <span class="tag">Networking</span>
-            </div>
-        </article>
+  <div class="project">
+    <div class="project-text">
+      <h2>Smart DP</h2>
+      <p>Shortcut-based system to optimize user workflows.</p>
+    </div>
+    <div class="project-image"></div>
+  </div>
 
-    </section>
+  <div class="project">
+    <div class="project-text">
+      <h2>System Mapping</h2>
+      <p>Research-driven exploration of complex user journeys.</p>
+    </div>
+    <div class="project-image"></div>
+  </div>
+
+</section>
+
+<section id="about" class="about">
+  <h2>About</h2>
+  <p>
+    I am a designer focused on UX, systems thinking, and interaction design.
+    My work blends research, creativity, and technology to build meaningful experiences.
+  </p>
+</section>
+
+<section id="contact" class="contact">
+  <h2>Contact</h2>
+  <p>Email: your@email.com</p>
+</section>
+
+<footer>
+  <p>© 2026 Your Name</p>
+</footer>
+
+<script>
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    e.preventDefault();
+    document.querySelector(this.getAttribute('href')).scrollIntoView({
+      behavior: 'smooth'
+    });
+  });
+});
+</script>
 
 </body>
 </html>
