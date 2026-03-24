@@ -1,1 +1,10 @@
-# akashgugnani.github.io
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My First GitHub Website</title>
+</head>
+<body>
+  <h1>Hello, World!</h1>
+  <p>This is my brand new website hosted on GitHub Pages.</p>
+</body>
+</html>
