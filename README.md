@@ -199,14 +199,7 @@
     font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
     color: var(--muted);
   }
-  .skill-bar-wrap {
-    width: 160px; height: 2px; background: var(--border);
-    border-radius: 2px; overflow: hidden;
-  }
-  .skill-bar {
-    height: 100%; background: var(--accent);
-    border-radius: 2px;
-  }
+  
 
   /* ── PUBLICATIONS ── */
   .pubs-section { border-top: 1px solid var(--border); }
@@ -339,6 +332,55 @@
     .contact-links { align-items: flex-start; }
     footer { padding: 24px; flex-direction: column; gap: 8px; }
   }
+  .contact-icon {
+  font-size: 18px;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.contact-icon:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+/* ── GALLERY LINKS ── */
+.gallery-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.gallery-card {
+  display: block;
+  padding: 28px;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  transition: all 0.25s ease;
+}
+
+.gallery-card:hover {
+  border-color: var(--accent);
+  background: var(--bg3);
+  transform: translateY(-3px);
+}
+
+.gallery-title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.gallery-desc {
+  font-size: 13px;
+  color: var(--muted);
+}
 </style>
 </head>
 <body>
@@ -349,7 +391,6 @@
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
     <li><a href="#publications">Publications</a></li>
-    <li><a href="#research">Research</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
 </nav>
@@ -366,8 +407,6 @@
   <a href="#publications" class="btn btn-primary">View Publications</a>
   <a href="#contact" class="btn">Get in Touch</a>
   <a href="cv.pdf" class="btn">Download CV</a>
-</div>      <a href="#publications" class="btn btn-primary">View Publications</a>
-      <a href="#contact" class="btn">Get in Touch</a>
     </div>
   </div>
   <div class="hero-visual">
@@ -518,48 +557,10 @@
         I am a recipient of the <strong>Prime Minister's Research Fellowship (PMRF)</strong>, Ministry of Education, Government of India.
       </p>
     </div>
-<div class="skills-grid">
-  <div class="skill-row">
-    <span class="skill-name">Electronic Transport</span>
-  </div>
-  <div class="skill-row">
-    <span class="skill-name">Device Fabrication</span>
-  </div>
-  <div class="skill-row">
-    <span class="skill-name">Optoelectronics</span>
-  </div>
-  <div class="skill-row">
-    <span class="skill-name">2D Materials & hBN Encapsulation</span>
-  </div>
-  <div class="skill-row">
-    <span class="skill-name">Thermal Transport</span>
-  </div>
-</div>      <div class="skill-row">
-        <span class="skill-name">Electronic Transport</span>
-        <div class="skill-bar-wrap"><div class="skill-bar" style="width:92%"></div></div>
-      </div>
-      <div class="skill-row">
-        <span class="skill-name">Device Fabrication</span>
-        <div class="skill-bar-wrap"><div class="skill-bar" style="width:88%"></div></div>
-      </div>
-      <div class="skill-row">
-        <span class="skill-name">Optoelectronics</span>
-        <div class="skill-bar-wrap"><div class="skill-bar" style="width:84%"></div></div>
-      </div>
-      <div class="skill-row">
-        <span class="skill-name">2D Materials / hBN</span>
-        <div class="skill-bar-wrap"><div class="skill-bar" style="width:90%"></div></div>
-      </div>
-      <div class="skill-row">
-        <span class="skill-name">Thermal Transport</span>
-        <div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div>
-      </div>
-      <div class="skill-row">
-        <span class="skill-name">Data Analysis (Python)</span>
-        <div class="skill-bar-wrap"><div class="skill-bar" style="width:76%"></div></div>
-      </div>
-    </div>
-  </div>
+<div style="margin-top: 10px; color: var(--muted); font-size: 14px;">
+  Electronic Transport · Device Fabrication · Optoelectronics · 2D Materials · Thermal Transport
+</div>
+</div>  <!-- ADD THIS LINE -->
 </section>
 
 <!-- PUBLICATIONS -->
@@ -615,41 +616,28 @@
   </div>
 </section>
 
-<!-- RESEARCH THEMES -->
-<section id="research">
-  <div class="section-label">Research</div>
-  <h2 class="section-title">Themes &amp;<br><em>Interests</em></h2>
-  <div class="themes-grid">
-    <div class="theme-card">
-      <div class="theme-icon">⬡</div>
-      <h3 class="theme-title">2D Materials</h3>
-      <p class="theme-desc">Graphene, MoS₂, WS₂, MoSe₂, WSe₂ and their van der Waals heterostructures — atomically thin crystals with extraordinary electronic and optical properties.</p>
-    </div>
-    <div class="theme-card">
-      <div class="theme-icon">〰</div>
-      <h3 class="theme-title">Hydrodynamic Transport</h3>
-      <p class="theme-desc">When electron–electron scattering dominates, electrons flow like a viscous fluid. We probe this regime using the Wiedemann–Franz law as a thermometer for correlations.</p>
-    </div>
-    <div class="theme-card">
-      <div class="theme-icon">◎</div>
-      <h3 class="theme-title">Optoelectronics</h3>
-      <p class="theme-desc">Light–matter interaction in 2D semiconductors. Using UV illumination to tune disorder, photoconductivity, and trap-state dynamics in hBN-encapsulated devices.</p>
-    </div>
-    <div class="theme-card">
-      <div class="theme-icon">△</div>
-      <h3 class="theme-title">Quantum Transport</h3>
-      <p class="theme-desc">Low-temperature quantum phenomena — weak localisation, universal conductance fluctuations, and quantum critical behaviour at the Dirac point.</p>
-    </div>
-    <div class="theme-card">
-      <div class="theme-icon">⬡</div>
-      <h3 class="theme-title">Device Fabrication</h3>
-      <p class="theme-desc">Dry-transfer stacking of 2D crystals, hBN encapsulation, nanofabrication via e-beam lithography, and ultra-clean van der Waals assembly.</p>
-    </div>
-    <div class="theme-card">
-      <div class="theme-icon">∿</div>
-      <h3 class="theme-title">Thermal Transport</h3>
-      <p class="theme-desc">Simultaneous measurement of electrical and thermal conductance to study Wiedemann–Franz violations and heat flow in correlated electron systems.</p>
-    </div>
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="section-label">Gallery</div>
+  <h2 class="section-title">Visual<br><em>Archive</em></h2>
+
+  <div class="gallery-links">
+
+    <a href="images/research/" class="gallery-card">
+      <div class="gallery-title">Research & Lab</div>
+      <div class="gallery-desc">Devices, setups, measurement data</div>
+    </a>
+
+    <a href="images/academics/" class="gallery-card">
+      <div class="gallery-title">Academics</div>
+      <div class="gallery-desc">Conferences, talks, collaborations</div>
+    </a>
+
+    <a href="images/personal/" class="gallery-card">
+      <div class="gallery-title">Personal</div>
+      <div class="gallery-desc">Travel, photography, moments</div>
+    </a>
+
   </div>
 </section>
 
@@ -657,8 +645,35 @@
 <section id="contact" class="contact-section">
   <div>
     <div class="section-label">Contact</div>
-    <a href="mailto:akash_gugnani@iisc.ac.in" class="contact-email">akash_gugnani@iisc.ac.in</a>
+<section id="contact" class="contact-section">
+  <div>
+    <div class="section-label">Contact</div>
   </div>
+
+  <div class="contact-links" style="flex-direction: row; gap: 20px;">
+    
+    <a href="mailto:akash_gugnani@iisc.ac.in" class="contact-icon" title="Email">
+      ✉
+    </a>
+
+    <a href="https://github.com/akash_gugnani" target="_blank" class="contact-icon" title="GitHub">
+      ⌘
+    </a>
+
+    <a href="https://twitter.com/" target="_blank" class="contact-icon" title="Twitter">
+      𝕏
+    </a>
+
+    <a href="https://orcid.org/" target="_blank" class="contact-icon" title="ORCID">
+      ⊚
+    </a>
+
+    <a href="https://arxiv.org/abs/2508.10846" target="_blank" class="contact-icon" title="arXiv">
+      arχ
+    </a>
+
+  </div>
+</section>  </div>
   <div class="contact-links">
     <a href="https://github.com/akash_gugnani" target="_blank" class="contact-link">GitHub</a>
     <a href="https://arxiv.org/abs/2508.10846" target="_blank" class="contact-link">arXiv</a>
