@@ -362,8 +362,11 @@
     <p class="hero-bio">
       I study the quantum world of atomically thin materials — graphene, TMDCs and their heterostructures — probing how electrons flow, scatter, and interact with light at the nanoscale.
     </p>
-    <div class="hero-cta">
-      <a href="#publications" class="btn btn-primary">View Publications</a>
+<div class="hero-cta">
+  <a href="#publications" class="btn btn-primary">View Publications</a>
+  <a href="#contact" class="btn">Get in Touch</a>
+  <a href="cv.pdf" class="btn">Download CV</a>
+</div>      <a href="#publications" class="btn btn-primary">View Publications</a>
       <a href="#contact" class="btn">Get in Touch</a>
     </div>
   </div>
@@ -515,8 +518,23 @@
         I am a recipient of the <strong>Prime Minister's Research Fellowship (PMRF)</strong>, Ministry of Education, Government of India.
       </p>
     </div>
-    <div class="skills-grid">
-      <div class="skill-row">
+<div class="skills-grid">
+  <div class="skill-row">
+    <span class="skill-name">Electronic Transport</span>
+  </div>
+  <div class="skill-row">
+    <span class="skill-name">Device Fabrication</span>
+  </div>
+  <div class="skill-row">
+    <span class="skill-name">Optoelectronics</span>
+  </div>
+  <div class="skill-row">
+    <span class="skill-name">2D Materials & hBN Encapsulation</span>
+  </div>
+  <div class="skill-row">
+    <span class="skill-name">Thermal Transport</span>
+  </div>
+</div>      <div class="skill-row">
         <span class="skill-name">Electronic Transport</span>
         <div class="skill-bar-wrap"><div class="skill-bar" style="width:92%"></div></div>
       </div>
