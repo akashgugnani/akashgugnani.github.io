@@ -2525,8 +2525,8 @@ async function getBlogAISuggestions() {
 
   try {
     const modelsToTry = [
-      'claude-3-5-haiku-latest',
-      'claude-3-haiku-20240307'
+      'claude-3-5-haiku-20241022',
+      'claude-3-5-sonnet-20241022'
     ];
 
     let data = null;
@@ -2554,11 +2554,12 @@ async function getBlogAISuggestions() {
         break;
       }
 
-      const code = json?.error?.type ? ` (${json.error.type})` : '';
-      lastErrorMessage = `${json?.error?.message || 'API error'}${code}`;
+      const errorType = json?.error?.type || '';
+      const errorMsg = json?.error?.message || 'API error';
+      lastErrorMessage = `model: ${model} | ${errorMsg} (${errorType || 'unknown'}) | Check key permissions, credit availability, and model access in Anthropic Console.`;
 
-      // If key/billing/auth fails, no reason to retry with another model
-      if (res.status === 401 || res.status === 403 || res.status === 429) {
+      // Stop retrying on auth, billing, quota, or bad-request errors — another model won't help
+      if (res.status === 400 || res.status === 401 || res.status === 403 || res.status === 429) {
         break;
       }
     }
