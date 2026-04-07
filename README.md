@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Akash Gugnani — Physicist</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://cdn.maptiler.com/maptiler-sdk-js/v3.11.1/maptiler-sdk.umd.min.js"></script>
+<link href="https://cdn.maptiler.com/maptiler-sdk-js/v3.11.1/maptiler-sdk.css" rel="stylesheet" />
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -177,10 +179,10 @@
 
   /* ── ABOUT ── */
   .about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px; align-items: start;
-  }
+  display: block;
+  max-width: 800px;
+  margin: 0 auto;
+}
   .about-text p {
     font-size: 15px; color: var(--muted); line-height: 1.85;
     margin-bottom: 20px;
@@ -381,6 +383,236 @@
   font-size: 13px;
   color: var(--muted);
 }
+/* ── ARTISTIC MAP ── */
+/* ── TIMELINE ── */
+
+.timeline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  margin: 80px auto;
+  flex-wrap: wrap;
+}
+
+/* Nodes */
+.node {
+  position: relative;
+  text-align: center;
+}
+
+/* Dot */
+.dot {
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  border-radius: 50%;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Glow pulse */
+.dot::before {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  top: -6px;
+  left: -6px;
+  animation: pulse 2.5s infinite;
+  opacity: 0.4;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  70% { transform: scale(1.6); opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* Connecting line */
+.line {
+  width: 80px;
+  height: 1px;
+  background: var(--border);
+  position: relative;
+}
+
+/* Subtle gradient effect */
+.line::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--accent), transparent);
+  top: 0;
+  left: 0;
+  opacity: 0.4;
+}
+
+/* Tooltip-style content */
+.content {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20,20,20,0.95);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+  opacity: 0;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(6px);
+}
+
+/* Show on hover */
+.node:hover .content {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+/* Highlight */
+.content strong {
+  color: var(--accent2);
+}
+/* ── JOURNEY MAP ── */
+  .journey-section { border-top: 1px solid var(--border); }
+  .journey-layout {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 60px;
+    align-items: start;
+  }
+  .journey-sidebar { position: sticky; top: 100px; }
+  #journey-wrap {
+    background: #0d1117;
+    border-radius: 16px;
+    border: 1px solid #1a2535;
+    overflow: hidden;
+  }
+  #map-stage { position: relative; width: 100%; }
+  #map-stage svg { display: block; width: 100%; height: auto; }
+  .city-group { cursor: pointer; }
+  .city-pulse {
+    animation: city-pulse-anim 2.4s ease-in-out infinite;
+    transform-origin: center;
+    transform-box: fill-box;
+  }
+  @keyframes city-pulse-anim {
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.35; }
+  }
+  #map-tooltip {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.18s;
+    z-index: 10;
+    max-width: 220px;
+    min-width: 160px;
+  }
+  #map-tooltip.tip-visible { opacity: 1; }
+  .tip-inner {
+    background: #0a0f18;
+    border: 1px solid rgba(126,184,201,0.35);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .tip-year {
+    font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 4px;
+  }
+  .tip-city-name {
+    font-family: var(--font-serif);
+    font-size: 16px; color: var(--text); margin-bottom: 6px;
+  }
+  .tip-text { font-size: 11px; color: var(--muted); line-height: 1.65; }
+  .tip-tag {
+    display: inline-block; margin-top: 8px;
+    font-family: var(--font-mono);
+    font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 2px 8px; border-radius: 100px;
+    background: rgba(126,184,201,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(126,184,201,0.2);
+  }
+  .tip-tag.amber {
+    background: rgba(200,184,122,0.1); color: var(--accent2);
+    border-color: rgba(200,184,122,0.2);
+  }
+  .tip-tag.rose {
+    background: rgba(212,83,126,0.1); color: #d4537e;
+    border-color: rgba(212,83,126,0.2);
+  }
+  .map-legend {
+    display: flex; flex-wrap: wrap; gap: 20px;
+    padding: 14px 20px;
+    border-top: 1px solid #1a1f2a;
+  }
+  .map-leg-item {
+    display: flex; align-items: center; gap: 7px;
+    font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: #4a5060;
+  }
+  .map-leg-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .journey-timeline { display: flex; flex-direction: column; gap: 0; }
+  .tl-item {
+    display: grid;
+    grid-template-columns: 72px 1px 1fr;
+    gap: 0 20px;
+    padding-bottom: 36px;
+  }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-year {
+    font-family: var(--font-mono);
+    font-size: 11px; color: var(--faint);
+    text-align: right; padding-top: 2px;
+    letter-spacing: 0.05em;
+  }
+  .tl-line {
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .tl-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    flex-shrink: 0; margin-top: 3px;
+    border: 1.5px solid var(--accent);
+    background: var(--bg);
+  }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-dot.gold { border-color: var(--accent2); }
+  .tl-dot.gold.filled { background: var(--accent2); }
+  .tl-connector {
+    flex: 1; width: 1px; background: var(--border); margin-top: 6px;
+  }
+  .tl-item:last-child .tl-connector { display: none; }
+  .tl-content { padding-top: 0; }
+  .tl-place {
+    font-family: var(--font-serif);
+    font-size: 17px; color: var(--text); margin-bottom: 4px;
+  }
+  .tl-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+ 
+  @media (max-width: 860px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; }
+    .hero-visual { display: none; }
+    .about-grid { grid-template-columns: 1fr; }
+    .pub-card { grid-template-columns: 1fr; gap: 12px; }
+    .pub-card:hover { margin: 0; padding: 36px 0; }
+    section { padding: 72px 24px; }
+    .journey-layout { grid-template-columns: 1fr; }
+    .journey-sidebar { position: static; }
+    .contact-section { padding: 72px 24px; flex-direction: column; align-items: flex-start; }
+    .contact-links { align-items: flex-start; }
+    footer { padding: 24px; flex-direction: column; gap: 8px; }
+  }
+
 </style>
 </head>
 <body>
@@ -514,6 +746,8 @@
   </div>
 </section>
 
+
+
 <!-- MARQUEE -->
 <div class="marquee-wrap">
   <div class="marquee-track">
@@ -547,21 +781,201 @@
   <h2 class="section-title">The physicist<br><em>behind the work</em></h2>
   <div class="about-grid">
     <div class="about-text">
-      <p>
-        I am a physicist at the <strong>Indian Institute of Science, Bangalore</strong>, working in the group of Prof. Arindam Ghosh. My research focuses on understanding the fundamental physics of <strong>2D materials</strong> — atomically thin crystals like graphene and transition metal dichalcogenides (TMDCs).
-      </p>
-      <p>
-        My work explores how electrons behave collectively in ultra-clean graphene devices, particularly in the regime where electron–electron interactions dominate — the so-called <strong>hydrodynamic transport</strong> regime. I use a combination of UV illumination and gate-electric-field tuning to dynamically modulate disorder and probe thermal and electrical transport.
-      </p>
-      <p>
-        I am a recipient of the <strong>Prime Minister's Research Fellowship (PMRF)</strong>, Ministry of Education, Government of India.
-      </p>
-    </div>
+      <div class="about-text">
+  <p>
+    I am a physicist at the <strong>Indian Institute of Science, Bangalore</strong>, working in the group of Prof. Arindam Ghosh. My research focuses on electron transport in quantum materials, particularly in two-dimensional systems such as graphene and transition metal dichalcogenides.
+  </p>
+
+  <p>
+    I am interested in regimes where electrons stop behaving like independent particles and instead act collectively — in the so-called hydrodynamic limit, where electron–electron interactions dominate and transport acquires a fluid-like character. My work explores how charge and heat flow are coupled in such systems, and how deviations from standard laws can reveal deeper many-body physics.
+  </p>
+
+  <p>
+    Beyond research, I spend a lot of time thinking about how to explain complex science in simple, intuitive ways. I enjoy breaking down ideas for people outside physics, and I am particularly drawn to connections between science, human behaviour, and everyday observation.
+  </p>
+
+  <p>
+    Outside the lab, I play badminton, run, and explore interdisciplinary ideas across physics and beyond. I also share my workspace with my cat, <strong>Yoda</strong>.
+  </p>
+
+  <p>
+    I am supported by the <strong>Prime Minister’s Research Fellowship (PMRF)</strong>, Ministry of Education, Government of India.
+  </p>
+</div>
 <div style="margin-top: 10px; color: var(--muted); font-size: 14px;">
   Electronic Transport · Device Fabrication · Optoelectronics · 2D Materials · Thermal Transport
 </div>
 </div>  <!-- ADD THIS LINE -->
 </section>
+
+<!-- JOURNEY MAP -->
+<section id="journey" class="journey-section">
+  <div class="section-label">Journey</div>
+  <h2 class="section-title">Places I've<br><em>called home</em></h2>
+  <div class="journey-layout">
+ 
+    <!-- LEFT: Timeline -->
+    <div class="journey-timeline">
+      <div class="tl-item">
+        <div class="tl-year">Early</div>
+        <div class="tl-line"><div class="tl-dot filled"></div><div class="tl-connector"></div></div>
+        <div class="tl-content">
+          <div class="tl-place">Shamli, UP</div>
+          <div class="tl-desc">Grew up in this small town in western Uttar Pradesh. Where curiosity about the world began.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">Pre-2013</div>
+        <div class="tl-line"><div class="tl-dot filled"></div><div class="tl-connector"></div></div>
+        <div class="tl-content">
+          <div class="tl-place">Muzaffarnagar, UP</div>
+          <div class="tl-desc">Moved here for Class 11 &amp; 12 — first time away from home, navigating physics and independence simultaneously.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2016–19</div>
+        <div class="tl-line"><div class="tl-dot gold filled"></div><div class="tl-connector"></div></div>
+        <div class="tl-content">
+          <div class="tl-place">Varanasi — BHU</div>
+          <div class="tl-desc">Undergraduate at Banaras Hindu University. Fell in love with physics on the ghats of the Ganga. The city changes you.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2019–20</div>
+        <div class="tl-line"><div class="tl-dot gold filled"></div><div class="tl-connector"></div></div>
+        <div class="tl-content">
+          <div class="tl-place">Hyderabad</div>
+          <div class="tl-desc">A year of transition — exploring, working, and deciding what comes next. The biryani helped.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2020–now</div>
+        <div class="tl-line"><div class="tl-dot filled"></div><div class="tl-connector"></div></div>
+        <div class="tl-content">
+          <div class="tl-place">Bengaluru — IISc</div>
+          <div class="tl-desc">PhD at the Indian Institute of Science. Studying graphene and 2D materials. The longest chapter so far.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">Various</div>
+        <div class="tl-line"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+        <div class="tl-content">
+          <div class="tl-place">Trips &amp; Conferences</div>
+          <div class="tl-desc">Delhi, Mumbai, Kolkata, Goa, Chennai — and a few places abroad for conferences and holidays. Hover the map to explore.</div>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- RIGHT: Map -->
+    <div class="journey-sidebar">
+      <div id="journey-wrap">
+        <div id="map" style="height: 580px; width: 100%;"></div>
+        <div class="map-legend">
+          <div class="map-leg-item"><div class="map-leg-dot" style="background:#7eb8c9"></div>Education / home</div>
+          <div class="map-leg-item"><div class="map-leg-dot" style="background:#c8b87a"></div>Key milestones</div>
+          <div class="map-leg-item"><div class="map-leg-dot" style="background:#d4537e"></div>Trips &amp; conferences</div>
+        </div>
+      </div>
+    </div>
+ 
+  </div>
+</section>
+ 
+<script>
+(function() {
+  // Set your MapTiler API key here (get one for free at https://cloud.maptiler.com/account/keys/)
+  maptilersdk.config.apiKey = 'Kb1UPN6FocNv0XTvpA6s';
+
+  var map = new maptilersdk.Map({
+    container: 'map',
+    style: maptilersdk.MapStyle.HYBRID,
+    center: [78.9629, 20.5937],
+    zoom: 5,
+    projection: 'globe',
+    space: {
+      preset: "space"
+    }
+  });
+
+  var cityData = {
+    shamli:       { lat: 29.45, lng: 77.32, year: "Early years",     city: "Shamli, UP",          text: "Grew up in this small town in western Uttar Pradesh. Where it all began.", tag: "Hometown", color: "#7eb8c9" },
+    saharanpur:   { lat: 29.964, lng: 77.546, year: "School years",   city: "Saharanpur, UP",      text: "Attended school here, exploring the region around.", tag: "Education", color: "#7eb8c9" },
+    varanasi:     { lat: 25.319, lng: 83.013, year: "2016 – 2019",     city: "Varanasi — BHU",      text: "Undergraduate at Banaras Hindu University. Fell in love with physics on the ghats of the Ganga.", tag: "B.Sc. Physics", color: "#c8b87a" },
+    hyderabad:    { lat: 17.362, lng: 78.475, year: "2019 – 2020",     city: "Hyderabad",           text: "A year of transition after undergrad — exploring, working, figuring out what comes next. The biryani helped.", tag: "Post-grad year", color: "#c8b87a" },
+    chennai:      { lat: 13.0825, lng: 80.275, year: "Visits",          city: "Chennai",             text: "Down south for a conference and to explore the coast.", tag: "Trip / Conference", color: "#d4537e" },
+    mumbai:       { lat: 19.076, lng: 72.877, year: "Visits",          city: "Mumbai",              text: "Conferences and a few memorable trips to the city that never sleeps.", tag: "Trip / Conference", color: "#d4537e" },
+    pune:         { lat: 18.521, lng: 73.855, year: "Visits",          city: "Pune",                text: "Visited for academic and professional engagements.", tag: "Trip / Conference", color: "#d4537e" },
+    pondicherry:  { lat: 11.9167, lng: 79.8167, year: "Holiday",       city: "Pondicherry",         text: "A serene coastal town with French colonial charm.", tag: "Holiday", color: "#d4537e" },
+    gokarna:      { lat: 14.55, lng: 74.31667, year: "Holiday",        city: "Gokarna, Karnataka",  text: "Beach destination in Karnataka, known for its temples and beaches.", tag: "Holiday", color: "#d4537e" },
+    bangalore:    { lat: 12.979, lng: 77.592, year: "2020 – present",  city: "Bengaluru — IISc",    text: "PhD at the Indian Institute of Science. Studying graphene and 2D materials. The longest chapter so far.", tag: "PhD · PMRF Fellow", color: "#7eb8c9" },
+    munnar:       { lat: 10.089, lng: 77.060, year: "Holiday",         city: "Munnar, Kerala",      text: "Hill station in Kerala, famous for tea plantations.", tag: "Holiday", color: "#d4537e" },
+    kochi:        { lat: 9.931, lng: 76.267, year: "Visits",           city: "Kochi, Kerala",       text: "Coastal city in Kerala, rich in history and culture.", tag: "Trip", color: "#d4537e" },
+    alleppey:     { lat: 9.49, lng: 76.33, year: "Holiday",            city: "Alleppey, Kerala",    text: "Backwater destination in Kerala, known for houseboats.", tag: "Holiday", color: "#d4537e" },
+    newdelhi:     { lat: 28.6139, lng: 77.2089, year: "Visits",        city: "New Delhi",           text: "The capital city, visited for various reasons including conferences and sightseeing.", tag: "Trip / Conference", color: "#d4537e" },
+    haridwar:     { lat: 29.945, lng: 78.163, year: "Visits",          city: "Haridwar",            text: "Sacred city on the Ganges, known for its temples and the Kumbh Mela.", tag: "Pilgrimage / Trip", color: "#d4537e" },
+    meerut:       { lat: 28.98, lng: 77.71, year: "Visits",            city: "Meerut",              text: "Industrial city in Uttar Pradesh, visited for family and exploration.", tag: "Trip", color: "#d4537e" },
+    lucknow:      { lat: 26.85, lng: 80.95, year: "Visits",            city: "Lucknow",             text: "City of Nawabs, rich in culture and history.", tag: "Trip", color: "#d4537e" },
+    prayagraj:    { lat: 25.4358, lng: 81.8464, year: "Visits",        city: "Prayagraj (Allahabad)", text: "Confluence of three rivers, a holy city.", tag: "Pilgrimage / Trip", color: "#d4537e" },
+    guwahati:     { lat: 26.1722, lng: 91.7458, year: "Visits",        city: "Guwahati",            text: "Gateway to Northeast India, vibrant and culturally diverse.", tag: "Trip", color: "#d4537e" },
+    mysore:       { lat: 12.3086, lng: 76.6531, year: "Visits",        city: "Mysore",              text: "City of palaces, known for its heritage and silk.", tag: "Trip", color: "#d4537e" },
+    ooty:         { lat: 11.41, lng: 76.70, year: "Holiday",           city: "Ooty",                text: "Queen of hill stations, famous for its tea gardens and climate.", tag: "Holiday", color: "#d4537e" },
+    tokyo:        { lat: 35.6895, lng: 139.6917, year: "International Trip", city: "Tokyo, Japan",       text: "Visited the bustling capital of Japan, exploring its culture and technology.", tag: "International Trip", color: "#d4537e" },
+    seoul:        { lat: 37.56, lng: 126.99, year: "International Trip", city: "Seoul, South Korea",  text: "Explored the vibrant capital of South Korea, rich in history and modernity.", tag: "International Trip", color: "#d4537e" }
+  };
+
+  var features = [];
+  for (var key in cityData) {
+    var d = cityData[key];
+    features.push({
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [d.lng, d.lat]
+      },
+      properties: {
+        color: d.color,
+        popup: '<strong>' + d.year + '</strong><br>' + d.city + '<br>' + d.text + '<br><em>' + d.tag + '</em>'
+      }
+    });
+  }
+
+  map.on('load', function () {
+    map.addSource('cities', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: features
+      }
+    });
+
+    map.addLayer({
+      id: 'cities',
+      type: 'circle',
+      source: 'cities',
+      paint: {
+        'circle-radius': 8,
+        'circle-color': ['get', 'color'],
+        'circle-opacity': 0.8
+      }
+    });
+
+    map.on('click', 'cities', function (e) {
+      new maptilersdk.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(e.features[0].properties.popup)
+        .addTo(map);
+    });
+
+    map.on('mouseenter', 'cities', function () {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+
+    map.on('mouseleave', 'cities', function () {
+      map.getCanvas().style.cursor = '';
+    });
+  });
+})();
+</script>
 
 <!-- PUBLICATIONS -->
 <section id="publications" class="pubs-section">
