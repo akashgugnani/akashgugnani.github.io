@@ -4,13 +4,13 @@ create table if not exists public.blogs (
   subtitle text not null,
   description text,
   content text not null,
-  imageUrl text,
+  "imageUrl" text,
   svg text,
-  references text[] default '{}',
-  userGenerated boolean default true,
+  "references" text[] default '{}',
+  "userGenerated" boolean default true,
   published boolean default true,
-  createdAt timestamptz default now(),
-  updatedAt timestamptz default now()
+  "createdAt" timestamptz default now(),
+  "updatedAt" timestamptz default now()
 );
 
 alter table public.blogs enable row level security;
