@@ -631,6 +631,31 @@
   margin: 28px 0 12px 0;
 }
 
+.blog-modal-image {
+  width: 100%;
+  max-height: 300px;
+  margin: 24px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg3);
+  overflow: hidden;
+}
+
+.blog-modal-image img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.blog-modal-image svg {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+}
+
 .blog-modal-references {
   margin-top: 32px;
   padding-top: 24px;
@@ -1927,139 +1952,7 @@ function initPhysicsInteractive() {
 }
 
 // Blog Module
-const blogData = [
-  {
-    id: 'evaporation',
-    title: 'Evaporation',
-    subtitle: 'Thermodynamics',
-    icon: '☕',
-    description: 'Understanding phase transitions and the molecular dance of matter.',
-    content: `
-      <h3>The Physics of Water Vapor</h3>
-      <p>Evaporation is a fundamental <strong>endothermic process</strong> where liquid molecules gain sufficient kinetic energy to overcome intermolecular forces and escape into the gas phase. When you heat water, you\'re essentially pumping energy into the system, allowing molecules at the surface to vibrate more vigorously until they break free.</p>
-      
-      <h3>Molecular Perspective</h3>
-      <p>At the molecular level, evaporation isn\'t an all-or-nothing affair. Due to the <strong>Maxwell-Boltzmann distribution</strong>, molecules have a range of energies. Even at room temperature, some molecules have enough energy to escape—this is why wet clothes eventually dry even without heat. Conversely, some molecules in the vapor phase slow down and recondense (condensation), creating a dynamic equilibrium.</p>
-      
-      <h3>Energy Transfer</h3>
-      <p>The <strong>latent heat of vaporization</strong> for water is approximately 2.26 MJ/kg—a massive amount of energy. This is why sweating is an effective cooling mechanism: as sweat evaporates, it carries away thermal energy from your skin. This same principle keeps cooling towers and refrigeration systems operating efficiently.</p>
-      
-      <h3>Real-World Applications</h3>
-      <p>From coffee cooling to industrial cooling systems, evaporation dominates. In desalination plants, thermal energy drives evaporation to separate salt from water. In meteorology, evaporation from oceans and lakes is the engine driving the water cycle and weather patterns.</p>
-    `,
-    references: [
-      'Incropera et al., "Fundamentals of Heat and Mass Transfer"',
-      'Goldstein, R. J., et al. (2010). "Heat transfer phenomena" in handb. single phase convective heat transfer',
-      'IAPWS-IF97: Industrial Formulation for the Thermodynamic Properties of Water and Steam'
-    ]
-  },
-  {
-    id: 'nucleation',
-    title: 'Nucleation',
-    subtitle: 'Fluid Dynamics',
-    icon: '🍺',
-    description: 'The spontaneous formation of bubbles and the physics of phase separation.',
-    content: `
-      <h3>Birth of Bubbles</h3>
-      <p>Nucleation is the process by which bubbles spontaneously form in a supersaturated liquid. In carbonated beverages, dissolved CO₂ molecules don\'t randomly scatter throughout the liquid—they tend to cluster at <strong>nucleation sites</strong>: imperfections on the glass surface, dust particles, or even microscopic scratches.</p>
-      
-      <h3>The Free Energy Barrier</h3>
-      <p>Bubble formation is opposed by <strong>surface tension</strong>, which acts like an elastic membrane around the bubble. Creating a new bubble interface requires overcoming this energetic barrier. There\'s a <strong>critical radius</strong> below which bubbles are thermodynamically unstable and dissolve, but above which they grow spontaneously. This critical radius depends on pressure, temperature, and the interfacial tension.</p>
-      
-      <h3>From Nucleation to Flow</h3>
-      <p>Once bubbles form, their ascent creates a complex flow pattern. The <strong>Rayleigh-Taylor instability</strong> can occur at the bubble-liquid interface if the denser fluid sits above the lighter one. Additionally, <strong>wake effects</strong> from rising bubbles influence the trajectories of other bubbles—what appears random is actually chaotic but deterministic.</p>
-      
-      <h3>Practical Relevance</h3>
-      <p>Understanding nucleation is critical for boiling heat transfer, cavitation damage in pumps, cloud formation in the atmosphere, and even medical applications like ultrasound-driven drug delivery.</p>
-    `,
-    references: [
-      'Lohse, D., & Zhang, X. (2015). "Bubble nucleation and dynamics in blood"',
-      'Volmer, M., Kinetik der Phasenbildung (1939)',
-      'Kashchiev, D. (2000). "Nucleation: Basic Theory with Applications"'
-    ]
-  },
-  {
-    id: 'refraction',
-    title: 'Refraction',
-    subtitle: 'Optics & Wave Physics',
-    icon: '🔆',
-    description: 'How light bends and splits into its rainbow spectrum.',
-    content: `
-      <h3>Bending Light</h3>
-      <p>Refraction occurs when light crosses a boundary between two media with <strong>different refractive indices</strong>. The speed of light changes in different materials—in water, it\'s about 2.25 × 10⁸ m/s, compared to 3 × 10⁸ m/s in vacuum. This change in speed causes light to bend according to <strong>Snell\'s law</strong>:
-      <br><br>n₁ sin(θ₁) = n₂ sin(θ₂)
-      <br><br>
-      Here, n is the refractive index, and θ is the angle from the normal to the interface.</p>
-      
-      <h3>Dispersion: The Rainbow Effect</h3>
-      <p>Different wavelengths of light have slightly different refractive indices in a prism—this is <strong>dispersion</strong>. Blue light (shorter wavelength) bends more than red light (longer wavelength). This is why a prism splits white light into its component colors. The same physics explains why the sky is blue (Rayleigh scattering of shorter wavelengths) and why sunsets are red.</p>
-      
-      <h3>Critical Angle & Total Internal Reflection</h3>
-      <p>When light travels from a denser to a less dense medium at a steep enough angle, it undergoes <strong>total internal reflection</strong>—it bounces back entirely instead of refracting out. This critical angle is θc = arcsin(n₂/n₁). This principle enables fiber optic cables to guide light over long distances.</p>
-      
-      <h3>Applications</h3>
-      <p>From eyeglasses and camera lenses to fiber optic communication and spectroscopy, refraction is fundamental to modern technology. Understanding dispersion helps design achromatic lenses that eliminate color aberration.</p>
-    `,
-    references: [
-      'Born, M., & Wolf, E. (1999). "Principles of Optics: Electromagnetic Theory of Propagation..."',
-      'Hecht, E. (2017). "Optics" (5th Edition)',
-      'Snell\'s Law and related phenomena in classical optics texts'
-    ]
-  },
-  {
-    id: 'chaos',
-    title: 'Chaos Theory',
-    subtitle: 'Dynamical Systems',
-    icon: '🌀',
-    description: 'Deterministic unpredictability in motion and systems.',
-    content: `
-      <h3>The Double Pendulum Problem</h3>
-      <p>A double pendulum—where one pendulum hangs from another—exhibits <strong>chaotic behavior</strong>. Despite being completely deterministic (governed by Newton\'s laws), tiny differences in initial conditions lead to vastly different trajectories. This is the hallmark of a chaotic system: <strong>sensitive dependence on initial conditions</strong>.</p>
-      
-      <h3>Butterflies and Weather</h3>
-      <p>Edward Lorenz\'s famous observation—"the butterfly effect"—emerged from modeling atmospheric convection. He found that a change of 0.506127 to 0.506 (less than 0.1%) in initial conditions completely altered the weather prediction. This doesn\'t mean weather is random; it\'s deterministic but <strong>unpredictable beyond a certain horizon</strong> due to the exponential amplification of uncertainty.</p>
-      
-      <h3>Lyapunov Exponents</h3>
-      <p>The <strong>Lyapunov exponent</strong> quantifies how fast nearby trajectories diverge. For a chaotic system, it\'s positive:
-      <br><br>λ = lim(t→∞) (1/t) ln(|δx(t)| / |δx₀|)
-      <br><br>
-      This exponential divergence means perfect prediction requires infinite precision—impossible in practice.</p>
-      
-      <h3>Finding Order in Chaos</h3>
-      <p>Chaos isn\'t complete randomness. Chaotic systems often exhibit <strong>strange attractors</strong>—geometric patterns in phase space that the system "attracts" to. The <strong>Mandelbrot set</strong> and <strong>Julia sets</strong> visualize boundaries between chaotic and stable regimes. Chaos also appears in ecology (population dynamics), economics (market crashes), and even in quantum mechanics.</p>
-    `,
-    references: [
-      'Lorenz, E. N. (1963). "Deterministic nonperiodic flow" in Journal of Atmospheric Sciences',
-      'Strogatz, S. H. (2015). "Nonlinear Dynamics and Chaos"',
-      'Gleick, J. (1987). "Chaos: Making a New Science"'
-    ]
-  },
-  {
-    id: 'materials',
-    title: 'Material Properties',
-    subtitle: 'Solid Mechanics',
-    icon: '🪵',
-    description: 'Why bamboo is strong, flexible, and sustainable.',
-    content: `
-      <h3>Strength Meets Flexibility</h3>
-      <p>Bamboo exhibits an exceptional combination of high strength and flexibility. Its <strong>specific strength</strong> (strength-to-weight ratio) rivals that of many steels. This is achieved through its hierarchical fibrous structure: cellulose fibers run along the culm (stem), providing <strong>tensile strength</strong>, while the matrix of hemicellulose and lignin provides <strong>shear resistance</strong> and toughness.</p>
-      
-      <h3>Stress-Strain Relationship</h3>
-      <p>When bamboo is bent, it initially deforms <strong>elastically</strong>—the structure returns to its original shape when the stress is removed. The <strong>Young\'s modulus</strong> (stiffness) of bamboo ranges from 5-15 GPa depending on the species and moisture content. However, unlike brittle materials, bamboo can absorb significant energy before failing—a property called <strong>toughness</strong>.</p>
-      
-      <h3>The Fiber Architecture</h3>
-      <p>Bamboo\'s exceptional properties arise from its <strong>composite structure</strong>. Aligned cellulose fibers act like reinforcement (similar to steel in concrete), while the ligno-hemicellulose matrix acts as a binder. This mimics conventional fiber-reinforced composites but is <strong>naturally evolved</strong> over millions of years. The hollow, lightweight structure further reduces weight while maintaining bending strength.</p>
-      
-      <h3>Sustainability Advantage</h3>
-      <p>Unlike hardwoods that take decades to mature, bamboo reaches harvest maturity in 3-5 years. Its regenerative properties (shoots regrow from the root system) make it a highly sustainable material. Modern research explores bamboo-based composites, bio-plastics, and even biomedical applications.</p>
-    `,
-    references: [
-      'Sharma, B., et al. (2015). "Engineered bamboo for structural applications" in Journal of the Royal Society Interface',
-      'Dixon, P. G., et al. (2014). "Bamboo structures are resilient to impact loading"',
-      'Liese, W. (1987). "Research on Bamboo"'
-    ]
-  }
-];
+const blogData = [];
 
 // ═══════════════════════════════════════════════════════════════════════
 // AI-POWERED BLOG MANAGEMENT SYSTEM
@@ -2122,85 +2015,22 @@ function saveUserBlogs() {
   localStorage.setItem('akash-blogs', JSON.stringify(userGeneratedBlogs));
 }
 
-// Generate SVG schematic using OpenAI
-async function generateSVGSchematic(title, subtitle, blogText) {
-  const apiKey = localStorage.getItem('openai-api-key');
-  
-  if (!apiKey) {
-    alert('Please set your OpenAI API key first. Click the admin button (⚙) in the hero section.');
-    return null;
-  }
-
-  try {
-    const prompt = `You are an expert at creating clean, technical SVG diagrams and schematics.
-
-Based on this physics/science explanation, create a simple, elegant SVG schematic:
-
-Title: ${title}
-Subtitle: ${subtitle}
-Content: ${blogText.substring(0, 500)}...
-
-Requirements:
-- Return ONLY valid SVG code, nothing else
-- Use viewBox="0 0 200 200"
-- Use stroke="#7eb8c9" for main lines, "#c8b87a" for accents
-- Keep it educational and schematic-like (not decorative)
-- Make it understandable at small sizes
-- Use opacity for depth: opacity="0.5" to "0.9"
-- Include 3-5 key elements representing the main concept
-- No text labels inside SVG
-
-Return only the <svg>...</svg> code.`;
-
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-4-turbo',
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 1000
-      })
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error?.message || 'OpenAI API error');
-    }
-
-    const data = await response.json();
-    let svgCode = data.choices[0].message.content.trim();
-    
-    // Extract SVG if wrapped in code blocks
-    svgCode = svgCode.replace(/\`\`\`svg?\\n?/g, '').replace(/\`\`\`/g, '').trim();
-    
-    // Validate SVG
-    if (!svgCode.startsWith('<svg')) {
-      throw new Error('Invalid SVG response from AI');
-    }
-    
-    return svgCode;
-  } catch (error) {
-    console.error('SVG generation error:', error);
-    alert(`Error generating schematic: ${error.message}`);
-    return null;
-  }
+// Convert image file to base64 data URL
+function convertImageToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }
 
 // Add a new blog from user input
 async function addNewBlog(formData) {
-  const { title, subtitle, content } = formData;
+  const { title, subtitle, content, image } = formData;
   
-  if (!title || !subtitle || !content) {
-    alert('Please fill in all fields');
+  if (!title || !subtitle || !content || !image) {
+    alert('Please fill in all fields including uploading an image');
     return;
   }
 
@@ -2208,17 +2038,11 @@ async function addNewBlog(formData) {
   const submitBtn = document.querySelector('#blog-form-submit');
   const originalText = submitBtn.textContent;
   submitBtn.disabled = true;
-  submitBtn.textContent = 'Generating Schematic...';
+  submitBtn.textContent = 'Creating Blog...';
 
   try {
-    // Generate SVG schematic
-    const svgSchematic = await generateSVGSchematic(title, subtitle, content);
-    
-    if (!svgSchematic) {
-      submitBtn.textContent = originalText;
-      submitBtn.disabled = false;
-      return;
-    }
+    // Convert image to base64
+    const imageData = await convertImageToBase64(image);
 
     // Create blog object
     const newBlog = {
@@ -2227,7 +2051,7 @@ async function addNewBlog(formData) {
       subtitle: subtitle,
       description: content.substring(0, 150) + '...',
       content: `<p>${content.replace(/\n/g, '</p><p>')}</p>`,
-      svg: svgSchematic,
+      imageUrl: imageData,
       references: [],
       userGenerated: true,
       createdAt: new Date().toISOString()
@@ -2246,7 +2070,10 @@ async function addNewBlog(formData) {
     // Scroll to blog section
     document.getElementById('blog').scrollIntoView({ behavior: 'smooth' });
     
-    alert('Blog created successfully! Your schematic has been generated.');
+    alert('Blog created successfully!');
+  } catch (error) {
+    console.error('Error creating blog:', error);
+    alert('Error creating blog. Please try again.');
   } finally {
     submitBtn.textContent = originalText;
     submitBtn.disabled = false;
@@ -2295,14 +2122,6 @@ function createBlogAdminForm() {
         <h2>Create New Blog Post</h2>
         <button class="blog-admin-close" onclick="closeBlogAdminForm()">×</button>
       </div>
-      
-      <div class="blog-admin-api-key">
-        <label>
-          <span>OpenAI API Key</span>
-          <input type="password" id="api-key-input" placeholder="sk-..." />
-        </label>
-        <small>Your key is stored locally in your browser. <a href="https://platform.openai.com/api-keys" target="_blank">Get API key →</a></small>
-      </div>
 
       <form id="blog-form" onsubmit="handleBlogFormSubmit(event)">
         <div class="form-group">
@@ -2317,13 +2136,19 @@ function createBlogAdminForm() {
 
         <div class="form-group">
           <label>Explanation (detailed description)</label>
-          <textarea name="content" rows="8" placeholder="Explain the physics concept clearly. The AI will use this to generate a schematic." required></textarea>
-          <small>Write a detailed explanation. The AI will analyze this to create your schematic.</small>
+          <textarea name="content" rows="6" placeholder="Explain the physics concept clearly." required></textarea>
+          <small>Write a detailed explanation for your blog post.</small>
+        </div>
+
+        <div class="form-group">
+          <label>Schematic Image (PNG, JPG, SVG)</label>
+          <input type="file" name="image" accept="image/png,image/jpeg,image/svg+xml" required />
+          <small>Upload a PNG, JPG, or SVG image for your schematic diagram.</small>
         </div>
 
         <div class="form-actions">
           <button type="submit" id="blog-form-submit" class="btn btn-primary">
-            Generate & Publish Blog
+            Publish Blog
           </button>
           <button type="button" class="btn" onclick="closeBlogAdminForm()">
             Cancel
@@ -2332,17 +2157,6 @@ function createBlogAdminForm() {
       </form>
     </div>
   `;
-
-  // Handle API key saving
-  const apiKeyInput = modal.querySelector('#api-key-input');
-  const savedKey = localStorage.getItem('openai-api-key');
-  if (savedKey) {
-    apiKeyInput.value = savedKey;
-  }
-  
-  apiKeyInput.addEventListener('change', (e) => {
-    localStorage.setItem('openai-api-key', e.target.value);
-  });
 
   // Close on overlay click
   modal.querySelector('.blog-admin-overlay').addEventListener('click', closeBlogAdminForm);
@@ -2356,7 +2170,8 @@ function handleBlogFormSubmit(event) {
   addNewBlog({
     title: formData.get('title'),
     subtitle: formData.get('subtitle'),
-    content: formData.get('content')
+    content: formData.get('content'),
+    image: formData.get('image')
   });
 }
 
@@ -2473,7 +2288,7 @@ function initBlog() {
     element.setAttribute('data-blog-id', blog.id);
     element.style.animationDelay = `${index * 0.4}s`;
     
-    // Use custom SVG if available, otherwise use predefined schematics
+    // Use custom SVG if available, otherwise use predefined schematics, or use uploaded image
     let svgContent = '';
     if (blog.svg) {
       svgContent = blog.svg;
@@ -2481,8 +2296,14 @@ function initBlog() {
       svgContent = svgSchematics[blog.id];
     }
     
+    // Determine image content
+    let imageContent = svgContent ? svgContent : '';
+    if (blog.imageUrl && !blog.svg && !svgSchematics[blog.id]) {
+      imageContent = `<img src="${blog.imageUrl}" alt="${blog.title}" style="width: 100%; height: 100%; object-fit: cover;" />`;
+    }
+    
     element.innerHTML = `
-      ${svgContent}
+      ${imageContent}
       <div class="blog-element-label">${blog.title}</div>
     `;
     
@@ -2623,6 +2444,14 @@ function openBlogModal(blog) {
       </div>
     `;
   }
+
+  // Image/schematic section
+  let imageSection = '';
+  if (blog.svg) {
+    imageSection = `<div class="blog-modal-image">${blog.svg}</div>`;
+  } else if (blog.imageUrl) {
+    imageSection = `<div class="blog-modal-image"><img src="${blog.imageUrl}" alt="${blog.title}" style="max-width: 100%; height: auto;" /></div>`;
+  }
   
   content.innerHTML = `
     <button class="blog-modal-close" onclick="closeBlogModal()">&times;</button>
@@ -2633,6 +2462,7 @@ function openBlogModal(blog) {
         <div class="blog-modal-title">${blog.title}</div>
       </div>
     </div>
+    ${imageSection}
     <div class="blog-modal-body">
       ${blog.content}
       ${referencesSection}
