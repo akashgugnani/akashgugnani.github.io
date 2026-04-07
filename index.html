@@ -2524,23 +2524,48 @@ async function getBlogAISuggestions() {
   const prompt = `Physics blog for Akash Gugnani (IISc). Dark theme: bg #0a0a0a, cyan #7eb8c9, gold #c8b87a.\n\nExplanation:\n${explanation}\n\nReturn ONLY valid JSON (no markdown):\n{\n  "title": "5-10 word compelling title",\n  "subtitle": "3-6 word physics concept label",\n  "keywords": ["kw1","kw2","kw3","kw4","kw5"],\n  "svg": "<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>...</svg>"\n}\n\nSVG: dark-theme physics schematic. Colors: ONLY #7eb8c9 and #c8b87a. Stroke-only, no text, opacity 0.4-0.9 for depth.`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-3-haiku-20240307',
-        max_tokens: 1200,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
+    const modelsToTry = [
+      'claude-3-5-haiku-latest',
+      'claude-3-haiku-20240307'
+    ];
 
-    const data = await res.json();
-    if (!res.ok) throw new Error(data?.error?.message || 'API error');
+    let data = null;
+    let lastErrorMessage = '';
+
+    for (const model of modelsToTry) {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model,
+          max_tokens: 1200,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+
+      const json = await res.json();
+      if (res.ok) {
+        data = json;
+        break;
+      }
+
+      const code = json?.error?.type ? ` (${json.error.type})` : '';
+      lastErrorMessage = `${json?.error?.message || 'API error'}${code}`;
+
+      // If key/billing/auth fails, no reason to retry with another model
+      if (res.status === 401 || res.status === 403 || res.status === 429) {
+        break;
+      }
+    }
+
+    if (!data) {
+      throw new Error(lastErrorMessage || 'API error');
+    }
 
     const raw = (data.content || []).map(part => part.text || '').join('');
     _blogAISuggestions = JSON.parse(raw.replace(/```json|```/g, '').trim());
@@ -2560,7 +2585,7 @@ async function getBlogAISuggestions() {
     if (status) status.textContent = 'Applied to form. Review and edit below.';
   } catch (err) {
     if (errEl) {
-      errEl.textContent = 'Error: ' + err.message;
+      errEl.textContent = 'Error: ' + err.message + ' | Check key permissions, credit availability, and model access in Anthropic Console.';
       errEl.style.display = 'block';
     }
     if (status) status.textContent = '';
