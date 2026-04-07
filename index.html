@@ -575,23 +575,39 @@
   background: var(--bg3);
 }
 
-.blog-modal-delete {
+.blog-modal-delete, .blog-modal-edit {
   position: absolute;
   top: 20px;
-  left: 25px;
   font-size: 13px;
   cursor: pointer;
-  color: #d4537e;
-  background: rgba(212, 83, 126, 0.1);
-  border: 1px solid #d4537e;
   padding: 8px 12px;
   border-radius: 2px;
   transition: all 0.2s ease;
+  border: 1px solid;
+}
+
+.blog-modal-delete {
+  left: 25px;
+  color: #d4537e;
+  background: rgba(212, 83, 126, 0.1);
+  border-color: #d4537e;
 }
 
 .blog-modal-delete:hover {
   background: rgba(212, 83, 126, 0.2);
   color: #e85a95;
+}
+
+.blog-modal-edit {
+  left: 120px;
+  color: #7eb8c9;
+  background: rgba(126, 184, 201, 0.1);
+  border-color: #7eb8c9;
+}
+
+.blog-modal-edit:hover {
+  background: rgba(126, 184, 201, 0.2);
+  color: #9ecfe8;
 }
 
 .blog-modal-header {
@@ -2152,6 +2168,191 @@ function deleteUserBlog(blogId) {
   }
 }
 
+// Open edit form for a blog
+function openEditBlogForm(blogId) {
+  const password = prompt('Enter admin password to edit this blog:');
+  
+  if (password === null) {
+    return;
+  }
+  
+  if (password !== BLOG_ADMIN_PASSWORD) {
+    alert('Incorrect password. Blog editing is password-protected.');
+    return;
+  }
+  
+  // Find the blog
+  const blog = userGeneratedBlogs.find(b => b.id === blogId);
+  if (!blog) {
+    alert('Blog not found.');
+    return;
+  }
+  
+  // Close the blog modal
+  closeBlogModal();
+  
+  // Create/show edit form
+  let editForm = document.getElementById('blog-edit-form');
+  if (!editForm) {
+    createEditBlogForm();
+    editForm = document.getElementById('blog-edit-form');
+  }
+  
+  // Populate the form with current blog data
+  document.getElementById('edit-blog-id').value = blog.id;
+  document.getElementById('edit-blog-title').value = blog.title;
+  document.getElementById('edit-blog-subtitle').value = blog.subtitle;
+  document.getElementById('edit-blog-content').value = blog.content.replace(/<\/?p>/g, '\n').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+  
+  // Show the edit form
+  editForm.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+// Create the edit blog form modal
+function createEditBlogForm() {
+  let modal = document.getElementById('blog-edit-form');
+  if (modal) return;
+  
+  modal = document.createElement('div');
+  modal.id = 'blog-edit-form';
+  modal.className = 'blog-admin-form';
+  
+  modal.innerHTML = `
+    <div class="blog-admin-overlay" onclick="closeEditBlogForm()"></div>
+    <div class="blog-admin-content">
+      <div class="blog-admin-header">
+        <h2>Edit Blog Post</h2>
+        <button class="blog-admin-close" onclick="closeEditBlogForm()">×</button>
+      </div>
+      
+      <form id="edit-blog-form">
+        <input type="hidden" id="edit-blog-id" name="blogId" />
+        
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" id="edit-blog-title" name="title" placeholder="e.g., Superconductivity" required />
+          <small>Give your blog post a compelling title.</small>
+        </div>
+
+        <div class="form-group">
+          <label>Subtitle (Physics Concept)</label>
+          <input type="text" id="edit-blog-subtitle" name="subtitle" placeholder="e.g., Zero Electrical Resistance" required />
+          <small>A brief concept or category for your blog.</small>
+        </div>
+
+        <div class="form-group">
+          <label>Explanation (detailed description)</label>
+          <textarea id="edit-blog-content" name="content" rows="6" placeholder="Explain the physics concept clearly." required></textarea>
+          <small>Write a detailed explanation for your blog post.</small>
+        </div>
+
+        <div class="form-group">
+          <label>Schematic Image (PNG, JPG, SVG)</label>
+          <input type="file" id="edit-blog-image" name="image" accept="image/png,image/jpeg,image/svg+xml" />
+          <small>Upload a new image (optional). Leave blank to keep current image.</small>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" id="edit-blog-form-submit" class="btn btn-primary">
+            Save Changes
+          </button>
+          <button type="button" class="btn" onclick="closeEditBlogForm()">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  `;
+  
+  // Close on overlay click
+  modal.querySelector('.blog-admin-overlay').addEventListener('click', closeEditBlogForm);
+  
+  // Handle form submission
+  const form = modal.querySelector('#edit-blog-form');
+  form.addEventListener('submit', handleEditBlogFormSubmit);
+  
+  document.body.appendChild(modal);
+}
+
+// Handle edit form submission
+async function handleEditBlogFormSubmit(event) {
+  event.preventDefault();
+  
+  const blogId = document.getElementById('edit-blog-id').value;
+  const title = document.getElementById('edit-blog-title').value;
+  const subtitle = document.getElementById('edit-blog-subtitle').value;
+  const content = document.getElementById('edit-blog-content').value;
+  const imageFile = document.getElementById('edit-blog-image').files[0];
+  
+  if (!title || !subtitle || !content) {
+    alert('Please fill in all required fields.');
+    return;
+  }
+  
+  const submitBtn = document.querySelector('#edit-blog-form-submit');
+  const originalText = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Saving...';
+  
+  try {
+    // Find the blog
+    const blogIndex = userGeneratedBlogs.findIndex(b => b.id === blogId);
+    if (blogIndex === -1) {
+      alert('Blog not found.');
+      return;
+    }
+    
+    const blog = userGeneratedBlogs[blogIndex];
+    
+    // Update blog data
+    blog.title = title;
+    blog.subtitle = subtitle;
+    blog.description = content.substring(0, 150) + '...';
+    blog.content = `<p>${content.replace(/\n/g, '</p><p>')}</p>`;
+    
+    // Update image if a new one was provided
+    if (imageFile) {
+      if (imageFile.size > 2 * 1024 * 1024) {
+        alert('Image is too large (' + (imageFile.size / (1024 * 1024)).toFixed(1) + 'MB). Please use a smaller image (under 1MB).');
+        return;
+      }
+      blog.imageUrl = await convertImageToBase64(imageFile);
+    }
+    
+    // Save to localStorage
+    saveUserBlogs();
+    
+    // Refresh the blog display
+    initBlog();
+    
+    // Close the form
+    closeEditBlogForm();
+    
+    // Scroll to blog section
+    document.getElementById('blog').scrollIntoView({ behavior: 'smooth' });
+    
+    alert('Blog updated successfully!');
+  } catch (error) {
+    console.error('Error updating blog:', error);
+    alert('Error updating blog. Please try again.');
+  } finally {
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
+  }
+}
+
+// Close edit blog form
+function closeEditBlogForm() {
+  const editForm = document.getElementById('blog-edit-form');
+  if (editForm) {
+    editForm.classList.remove('active');
+    document.body.style.overflow = 'auto';
+    // Reset form
+    document.getElementById('edit-blog-form').reset();
+  }
+}
+
 // Show/hide blog admin form
 function showBlogAdminForm() {
   let adminForm = document.getElementById('blog-admin-form');
@@ -2496,9 +2697,11 @@ function openBlogModal(blog) {
   const content = document.querySelector('.blog-modal-content');
   if (!content) return;
   
-  // Delete button for user-generated blogs
+  // Delete and Edit buttons for user-generated blogs
   let deleteButton = '';
+  let editButton = '';
   if (blog.userGenerated) {
+    editButton = `<button class="blog-modal-edit" onclick="openEditBlogForm('${blog.id}')">✎ Edit</button>`;
     deleteButton = `<button class="blog-modal-delete" onclick="deleteUserBlog('${blog.id}')">🗑 Delete</button>`;
   }
   
@@ -2525,6 +2728,7 @@ function openBlogModal(blog) {
   
   content.innerHTML = `
     <button class="blog-modal-close" onclick="closeBlogModal()">&times;</button>
+    ${editButton}
     ${deleteButton}
     <div class="blog-modal-header">
       <div>
