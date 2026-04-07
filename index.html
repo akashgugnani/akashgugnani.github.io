@@ -2060,6 +2060,8 @@ const PUBLISHED_BLOGS_URL = './blogs.json';
 const BLOGS_API_URL_STORAGE_KEY = 'akash-blog-api-url';
 const SUPABASE_URL_STORAGE_KEY = 'akash-supabase-url';
 const SUPABASE_ANON_STORAGE_KEY = 'akash-supabase-anon-key';
+const DEFAULT_SUPABASE_URL = 'https://cylcmshsieritgxigsao.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_qpa5YjdnVzTFMSryozwizQ_i72uYV8l';
 const DEFAULT_BLOGS_API_URL = './api/blogs';
 const LOCAL_BLOGS_STORAGE_KEY = 'akash-blogs';
 const blogData = [];
@@ -2180,8 +2182,8 @@ function getBlogsApiBaseUrl() {
 }
 
 function getSupabaseConfig() {
-  const url = (localStorage.getItem(SUPABASE_URL_STORAGE_KEY) || '').trim().replace(/\/$/, '');
-  const anonKey = (localStorage.getItem(SUPABASE_ANON_STORAGE_KEY) || '').trim();
+  const url = (localStorage.getItem(SUPABASE_URL_STORAGE_KEY) || DEFAULT_SUPABASE_URL || '').trim().replace(/\/$/, '');
+  const anonKey = (localStorage.getItem(SUPABASE_ANON_STORAGE_KEY) || DEFAULT_SUPABASE_ANON_KEY || '').trim();
   const enabled = Boolean(url && anonKey);
   return { url, anonKey, enabled };
 }
@@ -2923,12 +2925,12 @@ function showBlogAdminForm() {
 
   const supabaseUrlInput = document.getElementById('supabaseUrlInput');
   if (supabaseUrlInput) {
-    supabaseUrlInput.value = localStorage.getItem(SUPABASE_URL_STORAGE_KEY) || '';
+    supabaseUrlInput.value = localStorage.getItem(SUPABASE_URL_STORAGE_KEY) || DEFAULT_SUPABASE_URL || '';
   }
 
   const supabaseAnonInput = document.getElementById('supabaseAnonKeyInput');
   if (supabaseAnonInput) {
-    supabaseAnonInput.value = localStorage.getItem(SUPABASE_ANON_STORAGE_KEY) || '';
+    supabaseAnonInput.value = localStorage.getItem(SUPABASE_ANON_STORAGE_KEY) || DEFAULT_SUPABASE_ANON_KEY || '';
   }
 
   refreshActiveBlogApiUrl();
