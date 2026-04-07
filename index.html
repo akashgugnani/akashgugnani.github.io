@@ -888,6 +888,62 @@
   flex: 1;
 }
 
+.blog-admin-note {
+  background: rgba(126, 184, 201, 0.06);
+  border: 1px solid rgba(126, 184, 201, 0.2);
+  padding: 14px;
+  margin-bottom: 24px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.blog-storage-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.blog-storage-actions .btn {
+  justify-content: center;
+}
+
+.blog-storage-file {
+  position: relative;
+  overflow: hidden;
+}
+
+.blog-storage-file input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.blog-storage-status {
+  min-height: 18px;
+  margin-bottom: 18px;
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+.blog-empty-state {
+  grid-column: 1 / -1;
+  max-width: 560px;
+  padding: 28px;
+  border: 1px dashed rgba(126, 184, 201, 0.25);
+  background: rgba(17, 17, 17, 0.7);
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.8;
+}
+
+.blog-empty-state strong {
+  color: var(--text);
+}
+
 .btn-primary {
   background: var(--accent);
   color: var(--bg);
@@ -2000,7 +2056,15 @@ function initPhysicsInteractive() {
 }
 
 // Blog Module
+const PUBLISHED_BLOGS_URL = './blogs.json';
+const BLOGS_API_URL_STORAGE_KEY = 'akash-blog-api-url';
+const SUPABASE_URL_STORAGE_KEY = 'akash-supabase-url';
+const SUPABASE_ANON_STORAGE_KEY = 'akash-supabase-anon-key';
+const DEFAULT_BLOGS_API_URL = './api/blogs';
+const LOCAL_BLOGS_STORAGE_KEY = 'akash-blogs';
 const blogData = [];
+let publishedBlogs = [];
+let currentBlogs = [];
 
 // ═══════════════════════════════════════════════════════════════════════
 // AI-POWERED BLOG MANAGEMENT SYSTEM
@@ -2049,23 +2113,255 @@ let userGeneratedBlogs = [];
 const BLOG_ADMIN_PASSWORD = 'physics2024';
 let _blogAISuggestions = null;
 
+function stripHtml(html) {
+  const temp = document.createElement('div');
+  temp.innerHTML = html || '';
+  return (temp.textContent || temp.innerText || '').trim();
+}
+
+function normalizeBlog(blog, defaults = {}) {
+  if (!blog || typeof blog !== 'object') return null;
+
+  const title = typeof blog.title === 'string' ? blog.title.trim() : '';
+  const subtitle = typeof blog.subtitle === 'string' ? blog.subtitle.trim() : '';
+  const content = typeof blog.content === 'string' ? blog.content.trim() : '';
+
+  if (!title || !subtitle || !content) {
+    return null;
+  }
+
+  const textPreview = stripHtml(content).slice(0, 150);
+
+  return {
+    id: blog.id || `${defaults.idPrefix || 'blog'}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    title,
+    subtitle,
+    description: typeof blog.description === 'string' && blog.description.trim()
+      ? blog.description.trim()
+      : `${textPreview}${textPreview.length === 150 ? '...' : ''}`,
+    content,
+    imageUrl: typeof blog.imageUrl === 'string' ? blog.imageUrl : null,
+    svg: typeof blog.svg === 'string' ? blog.svg : null,
+    references: Array.isArray(blog.references) ? blog.references.filter(ref => typeof ref === 'string' && ref.trim()) : [],
+    userGenerated: defaults.userGenerated ?? Boolean(blog.userGenerated),
+    published: defaults.published ?? Boolean(blog.published),
+    createdAt: blog.createdAt || defaults.createdAt || new Date().toISOString()
+  };
+}
+
+function buildPublishedBlogPayload(sourceBlogs = userGeneratedBlogs) {
+  return {
+    blogs: sourceBlogs.map(blog => ({
+      id: blog.id,
+      title: blog.title,
+      subtitle: blog.subtitle,
+      description: blog.description,
+      content: blog.content,
+      imageUrl: blog.imageUrl || null,
+      svg: blog.svg || null,
+      references: Array.isArray(blog.references) ? blog.references : [],
+      createdAt: blog.createdAt,
+      published: true
+    }))
+  };
+}
+
+function setBlogStorageStatus(message, isError = false) {
+  const status = document.getElementById('blog-storage-status');
+  if (!status) return;
+  status.textContent = message || '';
+  status.style.color = isError ? '#d4537e' : 'var(--muted)';
+}
+
+function getBlogsApiBaseUrl() {
+  const stored = localStorage.getItem(BLOGS_API_URL_STORAGE_KEY);
+  const value = (stored || DEFAULT_BLOGS_API_URL).trim();
+  return value || DEFAULT_BLOGS_API_URL;
+}
+
+function getSupabaseConfig() {
+  const url = (localStorage.getItem(SUPABASE_URL_STORAGE_KEY) || '').trim().replace(/\/$/, '');
+  const anonKey = (localStorage.getItem(SUPABASE_ANON_STORAGE_KEY) || '').trim();
+  const enabled = Boolean(url && anonKey);
+  return { url, anonKey, enabled };
+}
+
+function getBlogBackendMode() {
+  return getSupabaseConfig().enabled ? 'supabase' : 'api';
+}
+
+function buildBlogsApiUrl(path = '') {
+  const base = getBlogsApiBaseUrl();
+  const normalizedPath = path || '';
+
+  if (/^https?:\/\//i.test(base)) {
+    const cleanBase = base.endsWith('/') ? base.slice(0, -1) : base;
+    return `${cleanBase}${normalizedPath}`;
+  }
+
+  const cleanBase = base.startsWith('/') || base.startsWith('.') ? base : `./${base}`;
+  return `${cleanBase}${normalizedPath}`;
+}
+
+function refreshActiveBlogApiUrl() {
+  const status = document.getElementById('blog-api-url-status');
+  if (!status) return;
+  const mode = getBlogBackendMode();
+  if (mode === 'supabase') {
+    const supabase = getSupabaseConfig();
+    status.textContent = `Active backend: Supabase (${supabase.url}/rest/v1/blogs)`;
+    return;
+  }
+  status.textContent = `Active backend: Custom API (${buildBlogsApiUrl('')})`;
+}
+
+async function loadPublishedBlogs() {
+  try {
+    const response = await fetch(PUBLISHED_BLOGS_URL, { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error(`Unable to load ${PUBLISHED_BLOGS_URL}`);
+    }
+
+    const data = await response.json();
+    const sourceBlogs = Array.isArray(data) ? data : Array.isArray(data.blogs) ? data.blogs : [];
+    publishedBlogs = sourceBlogs
+      .map(blog => normalizeBlog(blog, { published: true, idPrefix: 'published' }))
+      .filter(Boolean);
+  } catch (error) {
+    publishedBlogs = [];
+    console.warn('Published blogs could not be loaded.', error);
+  }
+}
+
+async function requestBlogApi(path = '', options = {}) {
+  if (getBlogBackendMode() === 'supabase') {
+    return requestSupabaseBlogs(path, options);
+  }
+
+  const response = await fetch(buildBlogsApiUrl(path), {
+    cache: 'no-store',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options.headers || {})
+    }
+  });
+
+  if (!response.ok) {
+    let details = '';
+    try {
+      const errData = await response.json();
+      details = errData?.error ? `: ${errData.error}` : '';
+    } catch {
+      details = '';
+    }
+    throw new Error(`Blog API request failed (${response.status})${details}`);
+  }
+
+  if (response.status === 204) {
+    return null;
+  }
+
+  return response.json();
+}
+
+async function requestSupabaseBlogs(path = '', options = {}) {
+  const { url, anonKey } = getSupabaseConfig();
+  if (!url || !anonKey) {
+    throw new Error('Supabase is not configured.');
+  }
+
+  const method = (options.method || 'GET').toUpperCase();
+  const id = path.startsWith('/') ? decodeURIComponent(path.slice(1)) : '';
+  const tableUrl = `${url}/rest/v1/blogs`;
+
+  let requestUrl = `${tableUrl}?select=*`;
+  if (method === 'GET') {
+    requestUrl = `${tableUrl}?select=*&order=createdAt.desc`;
+  } else if ((method === 'PUT' || method === 'DELETE') && id) {
+    requestUrl = `${tableUrl}?id=eq.${encodeURIComponent(id)}&select=*`;
+  }
+
+  const headers = {
+    apikey: anonKey,
+    Authorization: `Bearer ${anonKey}`,
+    'Content-Type': 'application/json',
+    ...(options.headers || {})
+  };
+
+  if (method === 'POST') {
+    headers.Prefer = 'resolution=merge-duplicates,return=representation';
+  }
+  if (method === 'PUT') {
+    headers.Prefer = 'return=representation';
+  }
+
+  const response = await fetch(requestUrl, {
+    method,
+    headers,
+    body: options.body
+  });
+
+  if (!response.ok) {
+    let details = '';
+    try {
+      const errorData = await response.json();
+      details = errorData?.message || errorData?.hint || JSON.stringify(errorData);
+    } catch {
+      details = response.statusText;
+    }
+    throw new Error(`Supabase request failed (${response.status}): ${details}`);
+  }
+
+  if (method === 'DELETE') {
+    return null;
+  }
+
+  const payload = await response.json();
+
+  if (method === 'GET') {
+    return { blogs: Array.isArray(payload) ? payload : [] };
+  }
+
+  if (method === 'POST' || method === 'PUT') {
+    return { blog: Array.isArray(payload) ? payload[0] || null : payload };
+  }
+
+  return payload;
+}
+
+async function isBlogApiAvailable() {
+  try {
+    await requestBlogApi('');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 // Load user blogs from localStorage
 function loadUserBlogs() {
-  const stored = localStorage.getItem('akash-blogs');
+  const stored = localStorage.getItem(LOCAL_BLOGS_STORAGE_KEY);
   if (stored) {
     try {
-      userGeneratedBlogs = JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      const sourceBlogs = Array.isArray(parsed) ? parsed : Array.isArray(parsed.blogs) ? parsed.blogs : [];
+      userGeneratedBlogs = sourceBlogs
+        .map(blog => normalizeBlog(blog, { userGenerated: true, published: false, idPrefix: 'local' }))
+        .filter(Boolean);
     } catch (e) {
       console.error('Error loading blogs:', e);
       userGeneratedBlogs = [];
     }
+  } else {
+    userGeneratedBlogs = [];
   }
 }
 
 // Save user blogs to localStorage
 function saveUserBlogs() {
   try {
-    localStorage.setItem('akash-blogs', JSON.stringify(userGeneratedBlogs));
+    localStorage.setItem(LOCAL_BLOGS_STORAGE_KEY, JSON.stringify(userGeneratedBlogs));
   } catch (error) {
     if (error instanceof QuotaExceededError || error.name === 'QuotaExceededError') {
       console.error('localStorage quota exceeded. Image may be too large.');
@@ -2087,6 +2383,193 @@ function convertImageToBase64(file) {
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
+}
+
+function getAllBlogs() {
+  const mergedBlogs = new Map();
+
+  // Keep server-published blogs canonical when an id exists in both local drafts and server data.
+  [...blogData, ...userGeneratedBlogs, ...publishedBlogs].forEach(blog => {
+    const normalizedBlog = normalizeBlog(blog, {
+      userGenerated: Boolean(blog.userGenerated),
+      published: Boolean(blog.published),
+      idPrefix: 'merged'
+    });
+
+    if (normalizedBlog) {
+      mergedBlogs.set(normalizedBlog.id, normalizedBlog);
+    }
+  });
+
+  return Array.from(mergedBlogs.values()).sort((left, right) => {
+    return new Date(right.createdAt || 0) - new Date(left.createdAt || 0);
+  });
+}
+
+function downloadJsonFile(filename, data) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function downloadLocalBlogBackup() {
+  loadUserBlogs();
+
+  if (!userGeneratedBlogs.length) {
+    setBlogStorageStatus('No local blogs found in this browser.', true);
+    return;
+  }
+
+  const dateLabel = new Date().toISOString().slice(0, 10);
+  downloadJsonFile(`akash-local-blogs-${dateLabel}.json`, { blogs: userGeneratedBlogs });
+  setBlogStorageStatus('Downloaded a local backup JSON for this browser.');
+}
+
+async function copyPublishedBlogsJson() {
+  if (await isBlogApiAvailable()) {
+    try {
+      const data = await requestBlogApi('');
+      const remoteBlogs = (Array.isArray(data?.blogs) ? data.blogs : [])
+        .map(blog => normalizeBlog(blog, { published: true, idPrefix: 'published' }))
+        .filter(Boolean);
+
+      if (!remoteBlogs.length) {
+        setBlogStorageStatus('No blogs available to copy.', true);
+        return;
+      }
+
+      const payload = JSON.stringify(buildPublishedBlogPayload(remoteBlogs), null, 2);
+      await navigator.clipboard.writeText(payload);
+      setBlogStorageStatus('Copied server blogs JSON. You can paste this into blogs.json as backup.');
+      return;
+    } catch (error) {
+      console.error('Could not copy server blogs JSON, falling back to local drafts.', error);
+    }
+  }
+
+  loadUserBlogs();
+
+  if (!userGeneratedBlogs.length) {
+    setBlogStorageStatus('No local blogs found in this browser.', true);
+    return;
+  }
+
+  const payload = JSON.stringify(buildPublishedBlogPayload(userGeneratedBlogs), null, 2);
+
+  try {
+    await navigator.clipboard.writeText(payload);
+    setBlogStorageStatus('Copied publish-ready JSON. Paste it into blogs.json, then upload/redeploy the site.');
+  } catch (error) {
+    console.error('Clipboard copy failed.', error);
+    setBlogStorageStatus('Clipboard copy failed. Use Download Backup instead.', true);
+  }
+}
+
+async function importLocalBlogBackup(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+    const sourceBlogs = Array.isArray(data) ? data : Array.isArray(data.blogs) ? data.blogs : [];
+    const importedBlogs = sourceBlogs
+      .map(blog => normalizeBlog(blog, { userGenerated: true, published: false, idPrefix: 'imported' }))
+      .filter(Boolean);
+
+    if (!importedBlogs.length) {
+      throw new Error('No valid blogs found in the selected file.');
+    }
+
+    if (await isBlogApiAvailable()) {
+      for (const blog of importedBlogs) {
+        await requestBlogApi('', {
+          method: 'POST',
+          body: JSON.stringify({
+            title: blog.title,
+            subtitle: blog.subtitle,
+            description: blog.description,
+            content: blog.content,
+            imageUrl: blog.imageUrl || null,
+            svg: blog.svg || null,
+            references: Array.isArray(blog.references) ? blog.references : [],
+            createdAt: blog.createdAt,
+            userGenerated: true,
+            published: true
+          })
+        });
+      }
+    } else {
+      loadUserBlogs();
+      const merged = new Map(userGeneratedBlogs.map(blog => [blog.id, blog]));
+      importedBlogs.forEach(blog => {
+        merged.set(blog.id, { ...blog, userGenerated: true, published: false });
+      });
+      userGeneratedBlogs = Array.from(merged.values()).sort((left, right) => {
+        return new Date(right.createdAt || 0) - new Date(left.createdAt || 0);
+      });
+      saveUserBlogs();
+    }
+
+    await initBlog();
+    setBlogStorageStatus(`Imported ${importedBlogs.length} blog(s).`);
+  } catch (error) {
+    console.error('Error importing blog backup:', error);
+    setBlogStorageStatus(error.message || 'Could not import the selected JSON file.', true);
+  } finally {
+    event.target.value = '';
+  }
+}
+
+async function publishLocalDraftsToServer() {
+  if (!(await isBlogApiAvailable())) {
+    setBlogStorageStatus('Blog server is not available. Start server.js first.', true);
+    return;
+  }
+
+  loadUserBlogs();
+  if (!userGeneratedBlogs.length) {
+    setBlogStorageStatus(`No local drafts found for this site origin (${location.origin}). If your drafts were created on another URL/port (for example file:// or localhost:5500), open that old URL, export backup, then import it here.`, true);
+    return;
+  }
+
+  let publishedCount = 0;
+  try {
+    for (const blog of userGeneratedBlogs) {
+      await requestBlogApi('', {
+        method: 'POST',
+        body: JSON.stringify({
+          id: blog.id,
+          title: blog.title,
+          subtitle: blog.subtitle,
+          description: blog.description,
+          content: blog.content,
+          imageUrl: blog.imageUrl || null,
+          svg: blog.svg || null,
+          references: Array.isArray(blog.references) ? blog.references : [],
+          createdAt: blog.createdAt,
+          userGenerated: true,
+          published: true
+        })
+      });
+      publishedCount += 1;
+    }
+
+    // Clear local drafts after successful publish to avoid stale local overriding server content.
+    userGeneratedBlogs = [];
+    saveUserBlogs();
+    await initBlog();
+    setBlogStorageStatus(`Published ${publishedCount} local draft(s) to shared storage.`);
+  } catch (error) {
+    console.error('Error publishing local drafts to server:', error);
+    setBlogStorageStatus('Could not publish all local drafts. Please try again.', true);
+  }
 }
 
 // Add a new blog from user input
@@ -2141,12 +2624,22 @@ async function addNewBlog(formData) {
       newBlog.svg = _blogAISuggestions.svg;
     }
 
-    // Save to localStorage
-    userGeneratedBlogs.unshift(newBlog);
-    saveUserBlogs();
+    if (await isBlogApiAvailable()) {
+      await requestBlogApi('', {
+        method: 'POST',
+        body: JSON.stringify({
+          ...newBlog,
+          published: true
+        })
+      });
+    } else {
+      // Fallback for static hosting/file mode
+      userGeneratedBlogs.unshift(newBlog);
+      saveUserBlogs();
+    }
 
     // Refresh the blog display
-    initBlog();
+    await initBlog();
 
     // Close the form
     closeBlogAdminForm();
@@ -2155,7 +2648,11 @@ async function addNewBlog(formData) {
     // Scroll to blog section
     document.getElementById('blog').scrollIntoView({ behavior: 'smooth' });
     
-    alert('Blog created successfully!');
+    if (await isBlogApiAvailable()) {
+      alert('Blog published to shared storage. It is now visible on other devices using this same site server.');
+    } else {
+      alert('Blog saved in this browser only. Start the local blog server to sync across devices.');
+    }
   } catch (error) {
     console.error('Error creating blog:', error);
     alert('Error creating blog. Please try again.');
@@ -2166,7 +2663,7 @@ async function addNewBlog(formData) {
 }
 
 // Delete a user-generated blog
-function deleteUserBlog(blogId) {
+async function deleteUserBlog(blogId) {
   const password = prompt('Enter admin password to delete this blog:');
   
   if (password === null) {
@@ -2180,10 +2677,21 @@ function deleteUserBlog(blogId) {
   }
   
   if (confirm('Are you sure you want to delete this blog?')) {
+    if (await isBlogApiAvailable()) {
+      try {
+        await requestBlogApi(`/${encodeURIComponent(blogId)}`, { method: 'DELETE' });
+        await initBlog();
+        alert('Blog deleted from shared storage.');
+        return;
+      } catch (error) {
+        console.error('Error deleting blog from shared storage:', error);
+      }
+    }
+
     userGeneratedBlogs = userGeneratedBlogs.filter(b => b.id !== blogId);
     saveUserBlogs();
-    initBlog();
-    alert('Blog deleted successfully.');
+    await initBlog();
+    alert('Local blog deleted from this browser.');
   }
 }
 
@@ -2201,7 +2709,7 @@ function openEditBlogForm(blogId) {
   }
   
   // Find the blog
-  const blog = userGeneratedBlogs.find(b => b.id === blogId);
+  const blog = currentBlogs.find(b => b.id === blogId && b.userGenerated);
   if (!blog) {
     alert('Blog not found.');
     return;
@@ -2315,20 +2823,19 @@ async function handleEditBlogFormSubmit(event) {
   submitBtn.textContent = 'Saving...';
   
   try {
-    // Find the blog
-    const blogIndex = userGeneratedBlogs.findIndex(b => b.id === blogId);
-    if (blogIndex === -1) {
+    const existingBlog = currentBlogs.find(b => b.id === blogId && b.userGenerated);
+    if (!existingBlog) {
       alert('Blog not found.');
       return;
     }
-    
-    const blog = userGeneratedBlogs[blogIndex];
-    
-    // Update blog data
-    blog.title = title;
-    blog.subtitle = subtitle;
-    blog.description = content.substring(0, 150) + '...';
-    blog.content = `<p>${content.replace(/\n/g, '</p><p>')}</p>`;
+
+    const updatedBlog = {
+      ...existingBlog,
+      title,
+      subtitle,
+      description: content.substring(0, 150) + '...',
+      content: `<p>${content.replace(/\n/g, '</p><p>')}</p>`
+    };
     
     // Update image if a new one was provided
     if (imageFile) {
@@ -2336,14 +2843,36 @@ async function handleEditBlogFormSubmit(event) {
         alert('Image is too large (' + (imageFile.size / (1024 * 1024)).toFixed(1) + 'MB). Please use a smaller image (under 1MB).');
         return;
       }
-      blog.imageUrl = await convertImageToBase64(imageFile);
+      updatedBlog.imageUrl = await convertImageToBase64(imageFile);
+    }
+
+    if (await isBlogApiAvailable()) {
+      await requestBlogApi(`/${encodeURIComponent(blogId)}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          title: updatedBlog.title,
+          subtitle: updatedBlog.subtitle,
+          description: updatedBlog.description,
+          content: updatedBlog.content,
+          imageUrl: updatedBlog.imageUrl || null,
+          svg: updatedBlog.svg || null,
+          references: Array.isArray(updatedBlog.references) ? updatedBlog.references : [],
+          userGenerated: true,
+          published: true
+        })
+      });
+    } else {
+      const blogIndex = userGeneratedBlogs.findIndex(b => b.id === blogId);
+      if (blogIndex === -1) {
+        alert('Blog not found in local drafts.');
+        return;
+      }
+      userGeneratedBlogs[blogIndex] = updatedBlog;
+      saveUserBlogs();
     }
     
-    // Save to localStorage
-    saveUserBlogs();
-    
     // Refresh the blog display
-    initBlog();
+    await initBlog();
     
     // Close the form
     closeEditBlogForm();
@@ -2386,6 +2915,23 @@ function showBlogAdminForm() {
   if (apiKeyInput) {
     apiKeyInput.value = localStorage.getItem('akash-anthropic-key') || '';
   }
+
+  const apiUrlInput = document.getElementById('blogApiUrlInput');
+  if (apiUrlInput) {
+    apiUrlInput.value = getBlogsApiBaseUrl();
+  }
+
+  const supabaseUrlInput = document.getElementById('supabaseUrlInput');
+  if (supabaseUrlInput) {
+    supabaseUrlInput.value = localStorage.getItem(SUPABASE_URL_STORAGE_KEY) || '';
+  }
+
+  const supabaseAnonInput = document.getElementById('supabaseAnonKeyInput');
+  if (supabaseAnonInput) {
+    supabaseAnonInput.value = localStorage.getItem(SUPABASE_ANON_STORAGE_KEY) || '';
+  }
+
+  refreshActiveBlogApiUrl();
 }
 
 function closeBlogAdminForm() {
@@ -2403,6 +2949,7 @@ function closeBlogAdminForm() {
   if (panel) panel.style.display = 'none';
   if (errEl) errEl.style.display = 'none';
   if (status) status.textContent = '';
+  setBlogStorageStatus('');
   _blogAISuggestions = null;
 }
 
@@ -2419,6 +2966,50 @@ function createBlogAdminForm() {
       <div class="blog-admin-header">
         <h2>Create New Blog Post</h2>
         <button class="blog-admin-close" onclick="closeBlogAdminForm()">×</button>
+      </div>
+
+      <div class="blog-admin-note">
+        Fully free mode: configure Supabase below. Once saved, new blogs sync globally with no paid server.
+      </div>
+
+      <div class="blog-storage-actions">
+        <button type="button" class="btn" onclick="publishLocalDraftsToServer()">Publish Local Drafts</button>
+        <button type="button" class="btn" onclick="copyPublishedBlogsJson()">Copy For blogs.json</button>
+        <button type="button" class="btn" onclick="downloadLocalBlogBackup()">Download Backup</button>
+        <label class="btn blog-storage-file">
+          Import Backup
+          <input type="file" accept="application/json" onchange="importLocalBlogBackup(event)" />
+        </label>
+      </div>
+
+      <div id="blog-storage-status" class="blog-storage-status"></div>
+
+      <div style="background:var(--bg2);border:1px solid var(--border);padding:14px;margin-bottom:24px;">
+        <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;color:var(--accent);margin-bottom:8px;">FREE GLOBAL BACKEND (SUPABASE)</div>
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <input type="text" id="supabaseUrlInput" placeholder="https://YOUR_PROJECT.supabase.co"
+            style="flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:10px;font-family:var(--font-mono);font-size:12px;" />
+        </div>
+        <div style="display:flex;gap:8px;">
+          <input type="password" id="supabaseAnonKeyInput" placeholder="Supabase anon public key"
+            style="flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:10px;font-family:var(--font-mono);font-size:12px;" />
+          <button type="button" onclick="saveSupabaseConfig()"
+            style="background:none;border:1px solid var(--border);color:var(--muted);font-family:var(--font-mono);font-size:10px;padding:0 14px;cursor:pointer;">Save</button>
+        </div>
+        <div style="font-size:11px;color:var(--faint);margin-top:6px;">
+          Uses Supabase free tier and stores posts in a cloud table.
+        </div>
+      </div>
+
+      <div style="background:var(--bg2);border:1px solid var(--border);padding:14px;margin-bottom:24px;">
+        <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;color:var(--accent);margin-bottom:8px;">CUSTOM API URL (OPTIONAL FALLBACK)</div>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="blogApiUrlInput" placeholder="https://your-api.example.com/api/blogs"
+            style="flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:10px;font-family:var(--font-mono);font-size:12px;" />
+          <button type="button" onclick="saveBlogApiUrl()"
+            style="background:none;border:1px solid var(--border);color:var(--muted);font-family:var(--font-mono);font-size:10px;padding:0 14px;cursor:pointer;">Save</button>
+        </div>
+        <div id="blog-api-url-status" style="font-size:11px;color:var(--faint);margin-top:6px;"></div>
       </div>
 
       <div style="background:var(--bg2);border:1px solid var(--border);padding:14px;margin-bottom:24px;">
@@ -2495,6 +3086,47 @@ function saveBlogApiKey() {
     return;
   }
   localStorage.setItem('akash-anthropic-key', key);
+}
+
+function saveBlogApiUrl() {
+  const input = document.getElementById('blogApiUrlInput');
+  const value = (input?.value || '').trim();
+
+  if (!value) {
+    localStorage.setItem(BLOGS_API_URL_STORAGE_KEY, DEFAULT_BLOGS_API_URL);
+    refreshActiveBlogApiUrl();
+    setBlogStorageStatus('Reset API URL to default local endpoint.');
+    return;
+  }
+
+  if (!/^https?:\/\//i.test(value) && !value.startsWith('/') && !value.startsWith('.')) {
+    setBlogStorageStatus('Use a full http(s) URL or a relative path like ./api/blogs.', true);
+    return;
+  }
+
+  localStorage.setItem(BLOGS_API_URL_STORAGE_KEY, value);
+  refreshActiveBlogApiUrl();
+  setBlogStorageStatus('Saved shared blog API URL.');
+}
+
+function saveSupabaseConfig() {
+  const url = (document.getElementById('supabaseUrlInput')?.value || '').trim().replace(/\/$/, '');
+  const anonKey = (document.getElementById('supabaseAnonKeyInput')?.value || '').trim();
+
+  if (!url || !anonKey) {
+    setBlogStorageStatus('Enter both Supabase URL and anon key.', true);
+    return;
+  }
+
+  if (!/^https:\/\/.+\.supabase\.co$/i.test(url)) {
+    setBlogStorageStatus('Supabase URL should look like https://your-project.supabase.co', true);
+    return;
+  }
+
+  localStorage.setItem(SUPABASE_URL_STORAGE_KEY, url);
+  localStorage.setItem(SUPABASE_ANON_STORAGE_KEY, anonKey);
+  refreshActiveBlogApiUrl();
+  setBlogStorageStatus('Supabase free backend saved.');
 }
 
 async function getBlogAISuggestions() {
@@ -2612,7 +3244,7 @@ function handleBlogFormSubmit(event) {
   event.preventDefault();
   const formData = new FormData(event.target);
   const content = (document.getElementById('blog-explanation')?.value || '').trim();
-  addNewBlog({
+  void addNewBlog({
     title: formData.get('title'),
     subtitle: formData.get('subtitle'),
     content: content,
@@ -2621,9 +3253,12 @@ function handleBlogFormSubmit(event) {
   });
 }
 
-function initBlog() {
+async function initBlog() {
   const blogElements = document.getElementById('blog-elements');
   if (!blogElements) return;
+
+  await loadPublishedBlogs();
+  loadUserBlogs();
   
   // Clear existing content
   blogElements.innerHTML = '';
@@ -2721,14 +3356,20 @@ function initBlog() {
     `
   };
   
-  // Load user blogs from localStorage
-  loadUserBlogs();
-  
-  // Combine hardcoded blogs with user-generated blogs (user blogs first)
-  const allBlogs = [...userGeneratedBlogs, ...blogData];
+  currentBlogs = getAllBlogs();
+
+  if (!currentBlogs.length) {
+    blogElements.innerHTML = `
+      <div class="blog-empty-state">
+        <strong>No blog posts are published yet.</strong><br>
+        Start the Node blog server and publish a post to make it visible on all devices.
+      </div>
+    `;
+    return;
+  }
   
   // Render blog interactive elements
-  allBlogs.forEach((blog, index) => {
+  currentBlogs.forEach((blog, index) => {
     const element = document.createElement('div');
     element.className = 'blog-interactive-element';
     element.setAttribute('data-blog-id', blog.id);
@@ -2778,8 +3419,7 @@ function attachBlogInteractions() {
   elements.forEach(element => {
     element.addEventListener('mouseenter', (e) => {
       const blogId = element.getAttribute('data-blog-id');
-      // Search in user-generated blogs first, then hardcoded blogs
-      const blog = userGeneratedBlogs.find(b => b.id === blogId) || blogData.find(b => b.id === blogId);
+      const blog = currentBlogs.find(b => b.id === blogId);
       
       if (blog) {
         infoCard.innerHTML = `
@@ -2956,9 +3596,9 @@ function createBlogModal() {
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     initPhysicsInteractive();
-    initBlog();
+    await initBlog();
   });
 } else {
   initPhysicsInteractive();
@@ -3278,7 +3918,7 @@ if (document.readyState === 'loading') {
 <section id="blog" class="blog-section">
   <div class="section-label">Blog</div>
   <h2 class="section-title">What's in<br><em>My Brain</em></h2>
-  <p class="section-intro">Interactive explorations of physics concepts through visual demonstrations and detailed explanations.</p>
+  <p class="section-intro">Interactive explorations of physics concepts through visual demonstrations and detailed explanations. Published posts load from a shared file so they can appear on every device.</p>
   
   <div class="blog-grid" id="blog-elements">
     <!-- Dynamically populated by JavaScript -->
