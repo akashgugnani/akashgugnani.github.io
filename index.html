@@ -130,8 +130,69 @@
   /* hero right: atom diagram SVG */
   .hero-visual {
     display: flex; align-items: center; justify-content: center;
+    position: relative;
   }
   .hero-visual svg { width: 100%; max-width: 400px; opacity: 0.75; }
+
+  /* ── INTERACTIVE BACKGROUND ── */
+  .hero-interactive-bg {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: auto;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .interactive-element {
+    position: absolute;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: opacity 0.3s ease;
+    animation: float 6s ease-in-out infinite;
+    opacity: 0.3;
+    filter: drop-shadow(0 0 8px rgba(126, 184, 201, 0.3));
+  }
+
+  .interactive-element:hover {
+    opacity: 0.6;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .info-card {
+    position: fixed;
+    background: var(--bg3);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 16px 20px;
+    max-width: 360px;
+    width: max-content;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    pointer-events: auto;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    font-family: var(--font-mono);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .info-card.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .info-card-title {
+    color: var(--accent2);
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
 
   /* ── MARQUEE ── */
   .marquee-wrap {
@@ -383,6 +444,417 @@
   font-size: 13px;
   color: var(--muted);
 }
+
+/* ── BLOG SECTION ── */
+.blog-section {
+  padding: 80px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.section-intro {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 60px;
+  max-width: 600px;
+  line-height: 1.8;
+}
+
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 60px 40px;
+  margin-top: 60px;
+  align-items: center;
+  justify-items: center;
+}
+
+.blog-interactive-element {
+  position: relative;
+  cursor: pointer;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+  animation: float 6s infinite ease-in-out;
+}
+
+.blog-interactive-element:hover {
+  filter: drop-shadow(0 8px 20px rgba(126, 184, 201, 0.4));
+}
+
+.blog-interactive-element svg {
+  width: 150px;
+  height: 150px;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.blog-interactive-element:hover svg {
+  transform: scale(1.1);
+}
+
+.blog-element-label {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-serif);
+  font-size: 16px;
+  color: var(--text);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.blog-interactive-element:hover .blog-element-label {
+  opacity: 1;
+}
+
+/* ── BLOG MODAL ── */
+.blog-modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.3s ease;
+  overflow-y: auto;
+}
+
+.blog-modal.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.blog-modal-content {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 60px 40px;
+  max-width: 700px;
+  width: 90%;
+  margin: auto;
+  position: relative;
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.blog-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  font-size: 32px;
+  font-weight: bold;
+  cursor: pointer;
+  color: var(--muted);
+  transition: color 0.2s ease;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+}
+
+.blog-modal-close:hover {
+  color: var(--accent);
+  background: var(--bg3);
+}
+
+.blog-modal-delete {
+  position: absolute;
+  top: 20px;
+  left: 25px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #d4537e;
+  background: rgba(212, 83, 126, 0.1);
+  border: 1px solid #d4537e;
+  padding: 8px 12px;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.blog-modal-delete:hover {
+  background: rgba(212, 83, 126, 0.2);
+  color: #e85a95;
+}
+
+.blog-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.blog-modal-subtitle {
+  font-size: 12px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.blog-modal-title {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.blog-modal-body {
+  color: var(--text);
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+.blog-modal-body p {
+  margin-bottom: 16px;
+}
+
+.blog-modal-body strong {
+  color: var(--accent);
+}
+
+.blog-modal-body h3 {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  color: var(--accent2);
+  margin: 28px 0 12px 0;
+}
+
+.blog-modal-references {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.blog-modal-references strong {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+
+.blog-modal-references ul {
+  list-style: none;
+  padding: 0;
+}
+
+.blog-modal-references li {
+  margin-bottom: 8px;
+  padding-left: 16px;
+  position: relative;
+}
+
+.blog-modal-references li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
+/* ── BLOG ADMIN FORM ── */
+.blog-admin-form {
+  display: none;
+  position: fixed;
+  z-index: 3000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.blog-admin-form.active {
+  display: flex;
+}
+
+.blog-admin-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+}
+
+.blog-admin-content {
+  position: relative;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  margin: auto;
+  padding: 40px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.blog-admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.blog-admin-header h2 {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  color: var(--text);
+  margin: 0;
+}
+
+.blog-admin-close {
+  background: none;
+  border: none;
+  font-size: 32px;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.blog-admin-close:hover {
+  color: var(--accent);
+}
+
+.blog-admin-api-key {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 16px;
+  margin-bottom: 24px;
+  border-radius: 2px;
+}
+
+.blog-admin-api-key label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.blog-admin-api-key span {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.blog-admin-api-key input {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.blog-admin-api-key input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.blog-admin-api-key small {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.blog-admin-api-key a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+#blog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 12px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 140px;
+}
+
+.form-group small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.form-actions .btn {
+  flex: 1;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background: #6fa8b8;
+}
+
+.btn-primary:disabled {
+  background: var(--muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 /* ── ARTISTIC MAP ── */
 /* ── TIMELINE ── */
 
@@ -613,6 +1085,197 @@
     footer { padding: 24px; flex-direction: column; gap: 8px; }
   }
 
+/* ── CV PANEL ── */
+.cv-panel {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  max-width: 900px;
+  height: 100vh;
+  background: var(--bg);
+  z-index: 999;
+  transition: right 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 80px 52px;
+  border-left: 1px solid var(--border);
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.4);
+}
+
+.cv-panel.open {
+  right: 0;
+}
+
+.cv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 60px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.cv-title {
+  font-family: var(--font-serif);
+  font-size: 42px;
+  color: var(--text);
+}
+
+.cv-close {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 10px 16px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.cv-close:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(126, 184, 201, 0.05);
+}
+
+.cv-section {
+  margin-bottom: 56px;
+}
+
+.cv-section-title {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-style: italic;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--accent2);
+  margin-bottom: 32px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--accent2);
+  opacity: 0.95;
+}
+
+.cv-items-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.cv-item {
+  border-bottom: 1px solid var(--border);
+  padding: 28px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cv-item:last-child {
+  border-bottom: none;
+}
+
+.cv-item-title {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.cv-item-org {
+  font-size: 14px;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+}
+
+.cv-item-period {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--faint);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cv-item-details {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.cv-item-authors {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.7;
+  font-style: italic;
+}
+
+.cv-item-journal {
+  font-size: 12px;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.cv-item-skills {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.cv-item-courses {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--faint);
+}
+
+.cv-item-category {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* Scrollbar styling for CV panel */
+.cv-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cv-panel::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+.cv-panel::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.cv-panel::-webkit-scrollbar-thumb:hover {
+  background: var(--faint);
+}
+
+@media (max-width: 860px) {
+  .cv-panel {
+    max-width: 100%;
+    padding: 70px 24px;
+  }
+
+  .cv-title {
+    font-size: 32px;
+  }
+
+  .cv-section-title {
+    font-size: 20px;
+  }
+
+  .cv-item-title {
+    font-size: 16px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -622,6 +1285,7 @@
   <div class="nav-logo">Akash Gugnani</div>
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
+    <li><a href="#blog">Blog</a></li>
     <li><a href="#publications">Publications</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
@@ -638,7 +1302,17 @@
 <div class="hero-cta">
   <a href="#publications" class="btn btn-primary">View Publications</a>
   <a href="#contact" class="btn">Get in Touch</a>
-  <a href="cv.pdf" class="btn">Download CV</a>
+  <button onclick="openCV()" class="btn">Download CV</button>
+  <button onclick="showBlogAdminForm()" class="btn" title="Create a new AI-generated blog post">⚙ Create Blog</button>
+  <!-- CV PANEL -->
+  <div id="cv-panel" class="cv-panel">
+    <div class="cv-header">
+      <div class="cv-title">Curriculum Vitae</div>
+      <button onclick="closeCV()" class="cv-close">✕</button>
+    </div>
+
+    <div id="cv-content" class="cv-content"></div>
+  </div>
     </div>
   </div>
   <div class="hero-visual">
@@ -743,9 +1417,1274 @@
       <circle cx="200" cy="195" r="10" fill="none" stroke="#c8b87a" stroke-width="1.5" opacity="0.7"/>
       <circle cx="200" cy="195" r="5" fill="#c8b87a" opacity="1"/>
     </svg>
+    
+    <!-- Interactive Physics Background -->
+    <div class="hero-interactive-bg" id="physicsBg">
+      <!-- Coffee Cup -->
+      <svg class="interactive-element" data-physics="coffee" style="width: 120px; height: 140px; top: 10%; left: 5%;" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <path d="M 20 40 Q 15 50 15 70 Q 15 85 25 90 L 75 90 Q 85 85 85 70 Q 85 50 80 40" stroke="#c8b87a" stroke-width="2"/>
+        <path d="M 20 40 L 80 40" stroke="#c8b87a" stroke-width="2"/>
+        <ellipse cx="50" cy="38" rx="30" ry="8" stroke="#c8b87a" stroke-width="2"/>
+        <path d="M 85 55 Q 95 60 95 70 Q 95 78 88 80" stroke="#c8b87a" stroke-width="2" fill="none"/>
+        <!-- Steam -->
+        <path d="M 35 30 Q 35 15 40 5" stroke="#7eb8c9" stroke-width="1.5" opacity="0.6" fill="none"/>
+        <path d="M 50 35 Q 50 18 55 5" stroke="#7eb8c9" stroke-width="1.5" opacity="0.6" fill="none"/>
+        <path d="M 65 30 Q 65 15 70 5" stroke="#7eb8c9" stroke-width="1.5" opacity="0.6" fill="none"/>
+      </svg>
+
+      <!-- Beer Glass -->
+      <svg class="interactive-element" data-physics="beer" style="width: 110px; height: 160px; bottom: 5%; right: 8%;" viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <path d="M 20 20 L 15 100 Q 15 110 25 110 L 55 110 Q 65 110 65 100 L 60 20" stroke="#c8b87a" stroke-width="2"/>
+        <path d="M 20 20 L 60 20" stroke="#c8b87a" stroke-width="2"/>
+        <ellipse cx="40" cy="20" rx="20" ry="6" stroke="#c8b87a" stroke-width="2"/>
+        <!-- Handle -->
+        <path d="M 65 40 Q 80 50 80 70 Q 80 85 70 90" stroke="#c8b87a" stroke-width="2" fill="none"/>
+        <!-- Bubbles -->
+        <circle cx="25" cy="70" r="3" stroke="#7eb8c9" stroke-width="1" opacity="0.5"/>
+        <circle cx="45" cy="80" r="2.5" stroke="#7eb8c9" stroke-width="1" opacity="0.5"/>
+        <circle cx="35" cy="90" r="2" stroke="#7eb8c9" stroke-width="1" opacity="0.5"/>
+      </svg>
+
+      <!-- Prism -->
+      <svg class="interactive-element" data-physics="prism" style="width: 140px; height: 100px; top: 15%; right: 12%;" viewBox="0 0 140 100" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <!-- Prism -->
+        <path d="M 30 70 L 70 20 L 110 70 Z" stroke="#7eb8c9" stroke-width="2"/>
+        <!-- Light ray in -->
+        <line x1="15" y1="45" x2="35" y2="70" stroke="#c8b87a" stroke-width="1.5"/>
+        <!-- Refracted rays out -->
+        <line x1="110" y1="70" x2="130" y2="30" stroke="#c8b87a" stroke-width="1" opacity="0.7" vector-effect="non-scaling-stroke"/>
+        <line x1="110" y1="70" x2="135" y2="50" stroke="#c8b87a" stroke-width="1" opacity="0.7" vector-effect="non-scaling-stroke" stroke-dasharray="2,2"/>
+        <line x1="110" y1="70" x2="130" y2="75" stroke="#c8b87a" stroke-width="1" opacity="0.7" vector-effect="non-scaling-stroke"/>
+        <!-- Spectrum colors -->
+        <circle cx="125" cy="35" r="2" fill="#ff0000" opacity="0.4"/>
+        <circle cx="128" cy="45" r="2" fill="#ffff00" opacity="0.4"/>
+        <circle cx="130" cy="55" r="2" fill="#0000ff" opacity="0.4"/>
+      </svg>
+
+      <!-- Double Pendulum -->
+      <svg class="interactive-element" data-physics="pendulum" style="width: 120px; height: 150px; bottom: 20%; left: 10%;" viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <!-- Pivot -->
+        <circle cx="50" cy="15" r="3" fill="#7eb8c9"/>
+        <!-- First rod -->
+        <line x1="50" y1="15" x2="50" y2="60" stroke="#c8b87a" stroke-width="1.5"/>
+        <!-- First bob -->
+        <circle cx="50" cy="62" r="5" stroke="#7eb8c9" stroke-width="1.5"/>
+        <!-- Second rod -->
+        <line x1="50" y1="62" x2="65" y2="115" stroke="#c8b87a" stroke-width="1.5"/>
+        <!-- Second bob -->
+        <circle cx="65" cy="120" r="5" stroke="#c8b87a" stroke-width="1.5"/>
+      </svg>
+
+      <!-- Bamboo Chair -->
+      <svg class="interactive-element" data-physics="chair" style="width: 130px; height: 140px; top: 50%; left: 8%;" viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <!-- Backrest -->
+        <path d="M 15 30 Q 10 60 15 100" stroke="#c8b87a" stroke-width="1.5"/>
+        <path d="M 85 30 Q 90 60 85 100" stroke="#c8b87a" stroke-width="1.5"/>
+        <!-- Seat -->
+        <rect x="20" y="55" width="60" height="8" stroke="#7eb8c9" stroke-width="1.5"/>
+        <!-- Legs -->
+        <line x1="30" y1="63" x2="25" y2="115" stroke="#c8b87a" stroke-width="1.5"/>
+        <line x1="70" y1="63" x2="75" y2="115" stroke="#c8b87a" stroke-width="1.5"/>
+        <!-- Bottom support -->
+        <line x1="25" y1="115" x2="75" y2="115" stroke="#c8b87a" stroke-width="1.5"/>
+      </svg>
+    </div>
   </div>
 </section>
 
+<script>
+// Comprehensive CV Data - easily updatable structure
+const cvData = {
+  "Education": [
+    {
+      title: "Integrated PhD in Experimental Condensed Matter Physics",
+      organization: "Indian Institute of Science, Bengaluru, Karnataka",
+      period: "2020 – Current",
+      details: "CGPA 9.0",
+      courses: "Classical Mechanics, Quantum Mechanics (I & II), Math Methods of Physics, Electromagnetic Theory, Condensed Matter Physics (I), Semiconductor Device Physics, Physics at Nanoscale, Classical & Quantum Optics"
+    },
+    {
+      title: "B.Sc. with Physics Hons.",
+      organization: "Banaras Hindu University, Varanasi, Uttar Pradesh",
+      period: "2016 – 2019",
+      details: "with Chemistry, Mathematics and Statistics as added subjects"
+    },
+    {
+      title: "M.Sc. with Physics",
+      organization: "University of Hyderabad, Hyderabad, Telangana",
+      period: "2019 – 2020",
+      details: "8.9 SGPA (1st Sem)"
+    },
+    {
+      title: "Higher Secondary Class",
+      organization: "K.S. Inter College, Nanauta, Uttar Pradesh",
+      period: "2014 – 2016",
+      details: "Among the district toppers with 89.80%"
+    },
+    {
+      title: "Senior Secondary Class",
+      organization: "L.L.R Inter College, Thana Bhawan, U.P.",
+      period: "2012 – 2014",
+      details: "Among the district toppers with 84.70%"
+    }
+  ],
+
+  "Talks, Honors & Awards": [
+    {
+      title: "Best Poster Award",
+      organization: "PMRF Symposium, IIT Guwahati",
+      period: "2026"
+    },
+    {
+      title: "Talk in Recent progress in Graphene and 2D Materials Research",
+      organization: "Japan",
+      period: "2025"
+    },
+    {
+      title: "Prime Minister Research Fellowship",
+      organization: "Government of India",
+      period: "2022"
+    },
+    {
+      title: "Rank 2, Integrated Ph.D. Coursework",
+      organization: "Indian Institute of Science",
+      period: "2020"
+    },
+    {
+      title: "CSIR-NET Junior Research Fellow",
+      organization: "Department of Science & Technology",
+      period: "2020 (99.59 percentile)",
+      details: "Physics"
+    },
+    {
+      title: "Joint Entrance Screening Test",
+      period: "2020 (Rank 29), 2019 (Rank 45)"
+    }
+  ],
+
+  "Workshops & Schools": [
+    {
+      title: "School on Quantum Information and Quantum Technology",
+      organization: "IISER Kolkata",
+      period: "2022"
+    },
+    {
+      title: "In-house Workshop on Basic Life Support Training",
+      organization: "OLSEH IISC"
+    }
+  ],
+
+  "Technical & Experimental Skills": [
+    {
+      category: "Nanofabrication & Characterization",
+      skills: "Electron beam Lithography, Atomic Force Microscopy, Raman Spectroscopy, Photoluminescence Measurements, Electrical & Thermal Transport Measurements"
+    },
+    {
+      category: "Programming & Software",
+      skills: "MATLAB, Python, Fortran, Origin Lab, COMSOL"
+    }
+  ],
+
+  "Science Awareness & Leadership": [
+    {
+      title: "Demonstration of 'Poisson Spot' Experiment",
+      organization: "Dept. of Physics, IISc Open Day",
+      period: "2023 & 2024"
+    },
+    {
+      title: "Mentored Student in Electronics",
+      details: "Assembled step-up and step-down transformers with successful demonstration"
+    }
+  ],
+
+  "Teaching Experience": [
+    {
+      title: "Certified Online Tutor in Physics",
+      details: "Advanced Physics with 3+ years experience"
+    },
+    {
+      title: "Course Instructor",
+      details: "Solid State Physics and Superconductivity"
+    },
+    {
+      title: "Teaching Assistant",
+      details: "Graduate-level Physics Laboratory Course"
+    },
+    {
+      title: "Teaching Assistant",
+      details: "Advanced Physics Course: Physics at the Nanoscale"
+    }
+  ],
+
+  "Publications": [
+    {
+      title: "Universality in quantum critical flow of charge and heat in ultraclean graphene",
+      authors: "Majumdar, A., Chadha, N., Pal, P., Gugnani, A., Ghawri, B., Watanabe, K., Taniguchi, T., Mukerjee, S., & Ghosh, A.",
+      journal: "Nature Physics",
+      period: "2025"
+    },
+    {
+      title: "Dynamically tunable hydrodynamic transport in boron nitride-encapsulated graphene",
+      authors: "Gugnani, A., Majumdar, A., Watanabe, K., Taniguchi, T., & Ghosh, A.",
+      journal: "Phys. Rev. Lett. 135, 256501",
+      period: "2025"
+    }
+  ],
+
+  "Extra-curricular Activities": [
+    {
+      title: "Sports & Athletics",
+      details: "Badminton, Sprint, Cycling — represent the department in various inter-department sports tournaments"
+    }
+  ]
+};
+
+function openCV() {
+  document.getElementById("cv-panel").classList.add("open");
+  renderCV();
+}
+
+function closeCV() {
+  document.getElementById("cv-panel").classList.remove("open");
+}
+
+function renderCV() {
+  const container = document.getElementById("cv-content");
+  container.innerHTML = "";
+
+  Object.keys(cvData).forEach(sectionTitle => {
+    const sectionDiv = document.createElement("div");
+    sectionDiv.className = "cv-section";
+
+    const titleDiv = document.createElement("div");
+    titleDiv.className = "cv-section-title";
+    titleDiv.textContent = sectionTitle;
+    sectionDiv.appendChild(titleDiv);
+
+    const itemsDiv = document.createElement("div");
+    itemsDiv.className = "cv-items-container";
+
+    cvData[sectionTitle].forEach((item, idx) => {
+      const itemDiv = document.createElement("div");
+      itemDiv.className = "cv-item";
+
+      let html = '';
+
+      // Main title (always present)
+      if (item.title) {
+        html += `<div class="cv-item-title">${item.title}</div>`;
+      }
+
+      // Organization/place
+      if (item.organization) {
+        html += `<div class="cv-item-org">${item.organization}</div>`;
+      }
+
+      // Period/meta info
+      if (item.period) {
+        html += `<div class="cv-item-period">${item.period}</div>`;
+      }
+
+      // Details/description
+      if (item.details) {
+        html += `<div class="cv-item-details">${item.details}</div>`;
+      }
+
+      // Authors (for publications)
+      if (item.authors) {
+        html += `<div class="cv-item-authors">${item.authors}</div>`;
+      }
+
+      // Journal/venue (for publications)
+      if (item.journal) {
+        html += `<div class="cv-item-journal">${item.journal}</div>`;
+      }
+
+      // Skills/courses (for categorized items)
+      if (item.skills) {
+        html += `<div class="cv-item-skills">${item.skills}</div>`;
+      }
+
+      // Courses (for education)
+      if (item.courses) {
+        html += `<div class="cv-item-courses"><strong>Course Modules:</strong> ${item.courses}</div>`;
+      }
+
+      // Category (for technical skills)
+      if (item.category) {
+        html += `<div class="cv-item-category"><strong>${item.category}:</strong> ${item.skills || item.details || ''}</div>`;
+      }
+
+      itemDiv.innerHTML = html;
+      itemsDiv.appendChild(itemDiv);
+    });
+
+    sectionDiv.appendChild(itemsDiv);
+    container.appendChild(sectionDiv);
+  });
+}
+</script>
+
+<!-- Interactive Physics Background Script -->
+<script>
+const physicsConcepts = {
+  coffee: {
+    title: "Evaporation & Thermodynamics",
+    content: "Steam rising from hot coffee is water vapor. Evaporation is an endothermic process where liquid molecules gain kinetic energy to escape into the gas phase. Heat transfer drives molecular motion."
+  },
+  beer: {
+    title: "Nucleation & Surface Tension",
+    content: "Bubbles in carbonated drinks form through nucleation—CO₂ molecules cluster at nucleation sites. Surface tension creates bubble walls. Pressure differences cause bubbles to rise in a chaotic, turbulent flow."
+  },
+  prism: {
+    title: "Refraction & Dispersion",
+    content: "Light bends when entering the prism due to a change in refractive index. Different wavelengths refract at different angles—red bends less than blue. This separates white light into its spectrum."
+  },
+  pendulum: {
+    title: "Chaos Theory & Dynamics",
+    content: "A double pendulum exhibits chaotic behavior. Small initial condition changes lead to vastly different trajectories. This sensitive dependence on initial conditions is the hallmark of deterministic chaos."
+  },
+  chair: {
+    title: "Stress & Material Properties",
+    content: "Bamboo exhibits remarkable mechanical properties with high strength-to-weight ratio. Under stress, it deforms elastically. The fibrous structure allows energy absorption—why bamboo is both flexible and strong."
+  }
+};
+
+function initPhysicsInteractive() {
+  const elements = document.querySelectorAll('.interactive-element');
+  let infoCard = document.querySelector('.info-card');
+  
+  // Add staggered animation delays
+  elements.forEach((element, index) => {
+    element.style.animationDelay = `${index * 0.4}s`;
+  });
+  
+  if (!infoCard) {
+    infoCard = document.createElement('div');
+    infoCard.className = 'info-card';
+    document.body.appendChild(infoCard);
+  }
+
+  elements.forEach(element => {
+    element.addEventListener('mouseenter', (e) => {
+      const physicsType = element.dataset.physics;
+      const concept = physicsConcepts[physicsType];
+      
+      if (concept) {
+        infoCard.innerHTML = `
+          <div class="info-card-title">${concept.title}</div>
+          <div>${concept.content}</div>
+        `;
+        
+        // Temporarily show to measure size
+        infoCard.classList.add('visible');
+        infoCard.style.left = '0px';
+        infoCard.style.top = '0px';
+        
+        // Force reflow to get actual dimensions
+        infoCard.offsetHeight;
+        
+        const cardRect = infoCard.getBoundingClientRect();
+        const elementRect = element.getBoundingClientRect();
+        const cardWidth = cardRect.width || 350;
+        const cardHeight = cardRect.height || 180;
+        
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        // Start with centered position above element
+        let x = elementRect.left + elementRect.width / 2 - cardWidth / 2;
+        let y = elementRect.top - cardHeight - 20;
+        
+        const padding = 15;
+        
+        // TOP: If popup would go above viewport
+        if (y < padding) {
+          // Try placing below element
+          y = elementRect.bottom + 20;
+          
+          // If still doesn't fit, place at top with padding
+          if (y + cardHeight > viewportHeight - padding) {
+            y = padding;
+          }
+        }
+        
+        // BOTTOM: If popup would go below viewport
+        if (y + cardHeight > viewportHeight - padding) {
+          // Move above if space available
+          if (elementRect.top - cardHeight - 20 > padding) {
+            y = elementRect.top - cardHeight - 20;
+          } else {
+            y = viewportHeight - cardHeight - padding;
+          }
+        }
+        
+        // LEFT: If popup would go off left edge
+        if (x < padding) {
+          x = padding;
+        }
+        
+        // RIGHT: If popup would go off right edge
+        if (x + cardWidth > viewportWidth - padding) {
+          x = viewportWidth - cardWidth - padding;
+        }
+        
+        // Ensure card stays within horizontal bounds as final safeguard
+        x = Math.max(padding, Math.min(x, viewportWidth - cardWidth - padding));
+        y = Math.max(padding, Math.min(y, viewportHeight - cardHeight - padding));
+        
+        infoCard.style.left = x + 'px';
+        infoCard.style.top = y + 'px';
+      }
+    });
+
+    element.addEventListener('mouseleave', () => {
+      infoCard.classList.remove('visible');
+    });
+
+    // Also support touch/click on mobile
+    element.addEventListener('click', (e) => {
+      const physicsType = element.dataset.physics;
+      const concept = physicsConcepts[physicsType];
+      
+      if (concept) {
+        infoCard.innerHTML = `
+          <div class="info-card-title">${concept.title}</div>
+          <div>${concept.content}</div>
+        `;
+        
+        // Temporarily show to measure size
+        infoCard.classList.add('visible');
+        infoCard.style.left = '0px';
+        infoCard.style.top = '0px';
+        
+        // Force reflow to get actual dimensions
+        infoCard.offsetHeight;
+        
+        const cardRect = infoCard.getBoundingClientRect();
+        const elementRect = element.getBoundingClientRect();
+        const cardWidth = cardRect.width || 350;
+        const cardHeight = cardRect.height || 180;
+        
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        // Start with centered position above element
+        let x = elementRect.left + elementRect.width / 2 - cardWidth / 2;
+        let y = elementRect.top - cardHeight - 20;
+        
+        const padding = 15;
+        
+        // TOP: If popup would go above viewport
+        if (y < padding) {
+          // Try placing below element
+          y = elementRect.bottom + 20;
+          
+          // If still doesn't fit, place at top with padding
+          if (y + cardHeight > viewportHeight - padding) {
+            y = padding;
+          }
+        }
+        
+        // BOTTOM: If popup would go below viewport
+        if (y + cardHeight > viewportHeight - padding) {
+          // Move above if space available
+          if (elementRect.top - cardHeight - 20 > padding) {
+            y = elementRect.top - cardHeight - 20;
+          } else {
+            y = viewportHeight - cardHeight - padding;
+          }
+        }
+        
+        // LEFT: If popup would go off left edge
+        if (x < padding) {
+          x = padding;
+        }
+        
+        // RIGHT: If popup would go off right edge
+        if (x + cardWidth > viewportWidth - padding) {
+          x = viewportWidth - cardWidth - padding;
+        }
+        
+        // Ensure card stays within horizontal bounds as final safeguard
+        x = Math.max(padding, Math.min(x, viewportWidth - cardWidth - padding));
+        y = Math.max(padding, Math.min(y, viewportHeight - cardHeight - padding));
+        
+        infoCard.style.left = x + 'px';
+        infoCard.style.top = y + 'px';
+        
+        e.stopPropagation();
+      }
+    });
+  });
+  
+  // Hide card on document click
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.interactive-element')) {
+      infoCard.classList.remove('visible');
+    }
+  });
+}
+
+// Blog Module
+const blogData = [
+  {
+    id: 'evaporation',
+    title: 'Evaporation',
+    subtitle: 'Thermodynamics',
+    icon: '☕',
+    description: 'Understanding phase transitions and the molecular dance of matter.',
+    content: `
+      <h3>The Physics of Water Vapor</h3>
+      <p>Evaporation is a fundamental <strong>endothermic process</strong> where liquid molecules gain sufficient kinetic energy to overcome intermolecular forces and escape into the gas phase. When you heat water, you\'re essentially pumping energy into the system, allowing molecules at the surface to vibrate more vigorously until they break free.</p>
+      
+      <h3>Molecular Perspective</h3>
+      <p>At the molecular level, evaporation isn\'t an all-or-nothing affair. Due to the <strong>Maxwell-Boltzmann distribution</strong>, molecules have a range of energies. Even at room temperature, some molecules have enough energy to escape—this is why wet clothes eventually dry even without heat. Conversely, some molecules in the vapor phase slow down and recondense (condensation), creating a dynamic equilibrium.</p>
+      
+      <h3>Energy Transfer</h3>
+      <p>The <strong>latent heat of vaporization</strong> for water is approximately 2.26 MJ/kg—a massive amount of energy. This is why sweating is an effective cooling mechanism: as sweat evaporates, it carries away thermal energy from your skin. This same principle keeps cooling towers and refrigeration systems operating efficiently.</p>
+      
+      <h3>Real-World Applications</h3>
+      <p>From coffee cooling to industrial cooling systems, evaporation dominates. In desalination plants, thermal energy drives evaporation to separate salt from water. In meteorology, evaporation from oceans and lakes is the engine driving the water cycle and weather patterns.</p>
+    `,
+    references: [
+      'Incropera et al., "Fundamentals of Heat and Mass Transfer"',
+      'Goldstein, R. J., et al. (2010). "Heat transfer phenomena" in handb. single phase convective heat transfer',
+      'IAPWS-IF97: Industrial Formulation for the Thermodynamic Properties of Water and Steam'
+    ]
+  },
+  {
+    id: 'nucleation',
+    title: 'Nucleation',
+    subtitle: 'Fluid Dynamics',
+    icon: '🍺',
+    description: 'The spontaneous formation of bubbles and the physics of phase separation.',
+    content: `
+      <h3>Birth of Bubbles</h3>
+      <p>Nucleation is the process by which bubbles spontaneously form in a supersaturated liquid. In carbonated beverages, dissolved CO₂ molecules don\'t randomly scatter throughout the liquid—they tend to cluster at <strong>nucleation sites</strong>: imperfections on the glass surface, dust particles, or even microscopic scratches.</p>
+      
+      <h3>The Free Energy Barrier</h3>
+      <p>Bubble formation is opposed by <strong>surface tension</strong>, which acts like an elastic membrane around the bubble. Creating a new bubble interface requires overcoming this energetic barrier. There\'s a <strong>critical radius</strong> below which bubbles are thermodynamically unstable and dissolve, but above which they grow spontaneously. This critical radius depends on pressure, temperature, and the interfacial tension.</p>
+      
+      <h3>From Nucleation to Flow</h3>
+      <p>Once bubbles form, their ascent creates a complex flow pattern. The <strong>Rayleigh-Taylor instability</strong> can occur at the bubble-liquid interface if the denser fluid sits above the lighter one. Additionally, <strong>wake effects</strong> from rising bubbles influence the trajectories of other bubbles—what appears random is actually chaotic but deterministic.</p>
+      
+      <h3>Practical Relevance</h3>
+      <p>Understanding nucleation is critical for boiling heat transfer, cavitation damage in pumps, cloud formation in the atmosphere, and even medical applications like ultrasound-driven drug delivery.</p>
+    `,
+    references: [
+      'Lohse, D., & Zhang, X. (2015). "Bubble nucleation and dynamics in blood"',
+      'Volmer, M., Kinetik der Phasenbildung (1939)',
+      'Kashchiev, D. (2000). "Nucleation: Basic Theory with Applications"'
+    ]
+  },
+  {
+    id: 'refraction',
+    title: 'Refraction',
+    subtitle: 'Optics & Wave Physics',
+    icon: '🔆',
+    description: 'How light bends and splits into its rainbow spectrum.',
+    content: `
+      <h3>Bending Light</h3>
+      <p>Refraction occurs when light crosses a boundary between two media with <strong>different refractive indices</strong>. The speed of light changes in different materials—in water, it\'s about 2.25 × 10⁸ m/s, compared to 3 × 10⁸ m/s in vacuum. This change in speed causes light to bend according to <strong>Snell\'s law</strong>:
+      <br><br>n₁ sin(θ₁) = n₂ sin(θ₂)
+      <br><br>
+      Here, n is the refractive index, and θ is the angle from the normal to the interface.</p>
+      
+      <h3>Dispersion: The Rainbow Effect</h3>
+      <p>Different wavelengths of light have slightly different refractive indices in a prism—this is <strong>dispersion</strong>. Blue light (shorter wavelength) bends more than red light (longer wavelength). This is why a prism splits white light into its component colors. The same physics explains why the sky is blue (Rayleigh scattering of shorter wavelengths) and why sunsets are red.</p>
+      
+      <h3>Critical Angle & Total Internal Reflection</h3>
+      <p>When light travels from a denser to a less dense medium at a steep enough angle, it undergoes <strong>total internal reflection</strong>—it bounces back entirely instead of refracting out. This critical angle is θc = arcsin(n₂/n₁). This principle enables fiber optic cables to guide light over long distances.</p>
+      
+      <h3>Applications</h3>
+      <p>From eyeglasses and camera lenses to fiber optic communication and spectroscopy, refraction is fundamental to modern technology. Understanding dispersion helps design achromatic lenses that eliminate color aberration.</p>
+    `,
+    references: [
+      'Born, M., & Wolf, E. (1999). "Principles of Optics: Electromagnetic Theory of Propagation..."',
+      'Hecht, E. (2017). "Optics" (5th Edition)',
+      'Snell\'s Law and related phenomena in classical optics texts'
+    ]
+  },
+  {
+    id: 'chaos',
+    title: 'Chaos Theory',
+    subtitle: 'Dynamical Systems',
+    icon: '🌀',
+    description: 'Deterministic unpredictability in motion and systems.',
+    content: `
+      <h3>The Double Pendulum Problem</h3>
+      <p>A double pendulum—where one pendulum hangs from another—exhibits <strong>chaotic behavior</strong>. Despite being completely deterministic (governed by Newton\'s laws), tiny differences in initial conditions lead to vastly different trajectories. This is the hallmark of a chaotic system: <strong>sensitive dependence on initial conditions</strong>.</p>
+      
+      <h3>Butterflies and Weather</h3>
+      <p>Edward Lorenz\'s famous observation—"the butterfly effect"—emerged from modeling atmospheric convection. He found that a change of 0.506127 to 0.506 (less than 0.1%) in initial conditions completely altered the weather prediction. This doesn\'t mean weather is random; it\'s deterministic but <strong>unpredictable beyond a certain horizon</strong> due to the exponential amplification of uncertainty.</p>
+      
+      <h3>Lyapunov Exponents</h3>
+      <p>The <strong>Lyapunov exponent</strong> quantifies how fast nearby trajectories diverge. For a chaotic system, it\'s positive:
+      <br><br>λ = lim(t→∞) (1/t) ln(|δx(t)| / |δx₀|)
+      <br><br>
+      This exponential divergence means perfect prediction requires infinite precision—impossible in practice.</p>
+      
+      <h3>Finding Order in Chaos</h3>
+      <p>Chaos isn\'t complete randomness. Chaotic systems often exhibit <strong>strange attractors</strong>—geometric patterns in phase space that the system "attracts" to. The <strong>Mandelbrot set</strong> and <strong>Julia sets</strong> visualize boundaries between chaotic and stable regimes. Chaos also appears in ecology (population dynamics), economics (market crashes), and even in quantum mechanics.</p>
+    `,
+    references: [
+      'Lorenz, E. N. (1963). "Deterministic nonperiodic flow" in Journal of Atmospheric Sciences',
+      'Strogatz, S. H. (2015). "Nonlinear Dynamics and Chaos"',
+      'Gleick, J. (1987). "Chaos: Making a New Science"'
+    ]
+  },
+  {
+    id: 'materials',
+    title: 'Material Properties',
+    subtitle: 'Solid Mechanics',
+    icon: '🪵',
+    description: 'Why bamboo is strong, flexible, and sustainable.',
+    content: `
+      <h3>Strength Meets Flexibility</h3>
+      <p>Bamboo exhibits an exceptional combination of high strength and flexibility. Its <strong>specific strength</strong> (strength-to-weight ratio) rivals that of many steels. This is achieved through its hierarchical fibrous structure: cellulose fibers run along the culm (stem), providing <strong>tensile strength</strong>, while the matrix of hemicellulose and lignin provides <strong>shear resistance</strong> and toughness.</p>
+      
+      <h3>Stress-Strain Relationship</h3>
+      <p>When bamboo is bent, it initially deforms <strong>elastically</strong>—the structure returns to its original shape when the stress is removed. The <strong>Young\'s modulus</strong> (stiffness) of bamboo ranges from 5-15 GPa depending on the species and moisture content. However, unlike brittle materials, bamboo can absorb significant energy before failing—a property called <strong>toughness</strong>.</p>
+      
+      <h3>The Fiber Architecture</h3>
+      <p>Bamboo\'s exceptional properties arise from its <strong>composite structure</strong>. Aligned cellulose fibers act like reinforcement (similar to steel in concrete), while the ligno-hemicellulose matrix acts as a binder. This mimics conventional fiber-reinforced composites but is <strong>naturally evolved</strong> over millions of years. The hollow, lightweight structure further reduces weight while maintaining bending strength.</p>
+      
+      <h3>Sustainability Advantage</h3>
+      <p>Unlike hardwoods that take decades to mature, bamboo reaches harvest maturity in 3-5 years. Its regenerative properties (shoots regrow from the root system) make it a highly sustainable material. Modern research explores bamboo-based composites, bio-plastics, and even biomedical applications.</p>
+    `,
+    references: [
+      'Sharma, B., et al. (2015). "Engineered bamboo for structural applications" in Journal of the Royal Society Interface',
+      'Dixon, P. G., et al. (2014). "Bamboo structures are resilient to impact loading"',
+      'Liese, W. (1987). "Research on Bamboo"'
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════════════════════════════
+// AI-POWERED BLOG MANAGEMENT SYSTEM
+// ═══════════════════════════════════════════════════════════════════════
+/*
+  HOW TO USE THIS SYSTEM:
+  
+  1. GET YOUR OPENAI API KEY:
+     - Visit: https://platform.openai.com/api-keys
+     - Create a new API key
+     - Keep it secret (it's stored locally in your browser)
+  
+  2. CREATE A NEW BLOG:
+     - Click the "⚙ Create Blog" button in the hero section
+     - Fill out the form:
+       * Title: Your blog topic (e.g., "Superconductivity")
+       * Subtitle: Physics concept (e.g., "Quantum Phenomena")
+       * Explanation: Detailed explanation of the concept
+     - Click "Generate & Publish Blog"
+     - AI will automatically create an SVG schematic based on your text
+  
+  3. HOW IT WORKS:
+     - Your blog text is sent to OpenAI GPT-4 Turbo
+     - AI analyzes the content and generates an SVG schematic
+     - The schematic is displayed alongside your blog
+     - All data is stored in browser localStorage
+  
+  4. VIEW & MANAGE BLOGS:
+     - Hover over any schematic to see quick preview
+     - Click to open full article
+     - User-generated blogs show a delete button (🗑) for removal
+  
+  5. DATA STORAGE:
+     - API key stored in: localStorage.getItem('openai-api-key')
+     - Blogs stored in: localStorage.getItem('akash-blogs')
+     - Data persists across browser sessions
+  
+  ESTIMATED COST:
+     - ~$0.01 - $0.05 per blog generation (using GPT-4 Turbo)
+     - Monitor usage at: https://platform.openai.com/account/usage
+*/
+
+let userGeneratedBlogs = [];
+
+// Load user blogs from localStorage
+function loadUserBlogs() {
+  const stored = localStorage.getItem('akash-blogs');
+  if (stored) {
+    try {
+      userGeneratedBlogs = JSON.parse(stored);
+    } catch (e) {
+      console.error('Error loading blogs:', e);
+      userGeneratedBlogs = [];
+    }
+  }
+}
+
+// Save user blogs to localStorage
+function saveUserBlogs() {
+  localStorage.setItem('akash-blogs', JSON.stringify(userGeneratedBlogs));
+}
+
+// Generate SVG schematic using OpenAI
+async function generateSVGSchematic(title, subtitle, blogText) {
+  const apiKey = localStorage.getItem('openai-api-key');
+  
+  if (!apiKey) {
+    alert('Please set your OpenAI API key first. Click the admin button (⚙) in the hero section.');
+    return null;
+  }
+
+  try {
+    const prompt = `You are an expert at creating clean, technical SVG diagrams and schematics.
+
+Based on this physics/science explanation, create a simple, elegant SVG schematic:
+
+Title: ${title}
+Subtitle: ${subtitle}
+Content: ${blogText.substring(0, 500)}...
+
+Requirements:
+- Return ONLY valid SVG code, nothing else
+- Use viewBox="0 0 200 200"
+- Use stroke="#7eb8c9" for main lines, "#c8b87a" for accents
+- Keep it educational and schematic-like (not decorative)
+- Make it understandable at small sizes
+- Use opacity for depth: opacity="0.5" to "0.9"
+- Include 3-5 key elements representing the main concept
+- No text labels inside SVG
+
+Return only the <svg>...</svg> code.`;
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: 'gpt-4-turbo',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 1000
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error?.message || 'OpenAI API error');
+    }
+
+    const data = await response.json();
+    let svgCode = data.choices[0].message.content.trim();
+    
+    // Extract SVG if wrapped in code blocks
+    svgCode = svgCode.replace(/\`\`\`svg?\\n?/g, '').replace(/\`\`\`/g, '').trim();
+    
+    // Validate SVG
+    if (!svgCode.startsWith('<svg')) {
+      throw new Error('Invalid SVG response from AI');
+    }
+    
+    return svgCode;
+  } catch (error) {
+    console.error('SVG generation error:', error);
+    alert(`Error generating schematic: ${error.message}`);
+    return null;
+  }
+}
+
+// Add a new blog from user input
+async function addNewBlog(formData) {
+  const { title, subtitle, content } = formData;
+  
+  if (!title || !subtitle || !content) {
+    alert('Please fill in all fields');
+    return;
+  }
+
+  // Show loading state
+  const submitBtn = document.querySelector('#blog-form-submit');
+  const originalText = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Generating Schematic...';
+
+  try {
+    // Generate SVG schematic
+    const svgSchematic = await generateSVGSchematic(title, subtitle, content);
+    
+    if (!svgSchematic) {
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+      return;
+    }
+
+    // Create blog object
+    const newBlog = {
+      id: `user-${Date.now()}`,
+      title: title,
+      subtitle: subtitle,
+      description: content.substring(0, 150) + '...',
+      content: `<p>${content.replace(/\n/g, '</p><p>')}</p>`,
+      svg: svgSchematic,
+      references: [],
+      userGenerated: true,
+      createdAt: new Date().toISOString()
+    };
+
+    // Save to localStorage
+    userGeneratedBlogs.unshift(newBlog);
+    saveUserBlogs();
+
+    // Refresh the blog display
+    initBlog();
+
+    // Close the form
+    closeBlogAdminForm();
+    
+    // Scroll to blog section
+    document.getElementById('blog').scrollIntoView({ behavior: 'smooth' });
+    
+    alert('Blog created successfully! Your schematic has been generated.');
+  } finally {
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
+  }
+}
+
+// Delete a user-generated blog
+function deleteUserBlog(blogId) {
+  if (confirm('Are you sure you want to delete this blog?')) {
+    userGeneratedBlogs = userGeneratedBlogs.filter(b => b.id !== blogId);
+    saveUserBlogs();
+    initBlog();
+  }
+}
+
+// Show/hide blog admin form
+function showBlogAdminForm() {
+  let adminForm = document.getElementById('blog-admin-form');
+  if (!adminForm) {
+    createBlogAdminForm();
+    adminForm = document.getElementById('blog-admin-form');
+  }
+  adminForm.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeBlogAdminForm() {
+  const adminForm = document.getElementById('blog-admin-form');
+  if (adminForm) {
+    adminForm.classList.remove('active');
+    document.body.style.overflow = 'auto';
+    // Reset form
+    document.getElementById('blog-form').reset();
+  }
+}
+
+// Create the admin form modal
+function createBlogAdminForm() {
+  const modal = document.createElement('div');
+  modal.id = 'blog-admin-form';
+  modal.className = 'blog-admin-form';
+  modal.innerHTML = `
+    <div class="blog-admin-overlay"></div>
+    <div class="blog-admin-content">
+      <div class="blog-admin-header">
+        <h2>Create New Blog Post</h2>
+        <button class="blog-admin-close" onclick="closeBlogAdminForm()">×</button>
+      </div>
+      
+      <div class="blog-admin-api-key">
+        <label>
+          <span>OpenAI API Key</span>
+          <input type="password" id="api-key-input" placeholder="sk-..." />
+        </label>
+        <small>Your key is stored locally in your browser. <a href="https://platform.openai.com/api-keys" target="_blank">Get API key →</a></small>
+      </div>
+
+      <form id="blog-form" onsubmit="handleBlogFormSubmit(event)">
+        <div class="form-group">
+          <label>Topic/Title</label>
+          <input type="text" name="title" placeholder="e.g., Superconductivity" required />
+        </div>
+
+        <div class="form-group">
+          <label>Subtitle (Physics concept)</label>
+          <input type="text" name="subtitle" placeholder="e.g., Quantum Phenomena" required />
+        </div>
+
+        <div class="form-group">
+          <label>Explanation (detailed description)</label>
+          <textarea name="content" rows="8" placeholder="Explain the physics concept clearly. The AI will use this to generate a schematic." required></textarea>
+          <small>Write a detailed explanation. The AI will analyze this to create your schematic.</small>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" id="blog-form-submit" class="btn btn-primary">
+            Generate & Publish Blog
+          </button>
+          <button type="button" class="btn" onclick="closeBlogAdminForm()">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  // Handle API key saving
+  const apiKeyInput = modal.querySelector('#api-key-input');
+  const savedKey = localStorage.getItem('openai-api-key');
+  if (savedKey) {
+    apiKeyInput.value = savedKey;
+  }
+  
+  apiKeyInput.addEventListener('change', (e) => {
+    localStorage.setItem('openai-api-key', e.target.value);
+  });
+
+  // Close on overlay click
+  modal.querySelector('.blog-admin-overlay').addEventListener('click', closeBlogAdminForm);
+
+  document.body.appendChild(modal);
+}
+
+function handleBlogFormSubmit(event) {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  addNewBlog({
+    title: formData.get('title'),
+    subtitle: formData.get('subtitle'),
+    content: formData.get('content')
+  });
+}
+
+function initBlog() {
+  const blogElements = document.getElementById('blog-elements');
+  if (!blogElements) return;
+  
+  // Clear existing content
+  blogElements.innerHTML = '';
+  
+  // SVG schematics for each blog topic
+  const svgSchematics = {
+    evaporation: `
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Cup -->
+        <path d="M 60 120 L 70 180 Q 70 185 75 185 L 125 185 Q 130 185 130 180 L 140 120" fill="none" stroke="#7eb8c9" stroke-width="2"/>
+        <ellipse cx="100" cy="120" rx="40" ry="8" fill="none" stroke="#7eb8c9" stroke-width="2"/>
+        <!-- Handle -->
+        <path d="M 140 130 Q 160 130 160 150 Q 160 170 140 170" fill="none" stroke="#7eb8c9" stroke-width="2"/>
+        <!-- Water inside -->
+        <ellipse cx="100" cy="140" rx="35" ry="6" fill="#7eb8c9" opacity="0.3"/>
+        <!-- Steam wisps -->
+        <path d="M 80 100 Q 75 80 85 60" fill="none" stroke="#7eb8c9" stroke-width="1.5" opacity="0.6"/>
+        <path d="M 100 90 Q 105 70 95 45" fill="none" stroke="#7eb8c9" stroke-width="1.5" opacity="0.7"/>
+        <path d="M 120 100 Q 125 75 115 50" fill="none" stroke="#7eb8c9" stroke-width="1.5" opacity="0.6"/>
+        <!-- Temperature indicator -->
+        <circle cx="100" cy="160" r="3" fill="#c8b87a"/>
+      </svg>
+    `,
+    nucleation: `
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Liquid background -->
+        <rect x="40" y="80" width="120" height="80" fill="none" stroke="#7eb8c9" stroke-width="2" opacity="0.3"/>
+        <!-- Bubbles of various sizes -->
+        <circle cx="70" cy="130" r="12" fill="none" stroke="#7eb8c9" stroke-width="1.5" opacity="0.8"/>
+        <circle cx="100" cy="110" r="18" fill="none" stroke="#7eb8c9" stroke-width="1.5" opacity="0.9"/>
+        <circle cx="130" cy="140" r="10" fill="none" stroke="#7eb8c9" stroke-width="1.5" opacity="0.7"/>
+        <circle cx="85" cy="150" r="8" fill="none" stroke="#7eb8c9" stroke-width="1.5" opacity="0.6"/>
+        <circle cx="120" cy="125" r="6" fill="none" stroke="#7eb8c9" stroke-width="1.5" opacity="0.5"/>
+        <!-- Nucleation sites (dots on bottom) -->
+        <circle cx="60" cy="160" r="2" fill="#c8b87a" opacity="0.8"/>
+        <circle cx="90" cy="158" r="2" fill="#c8b87a" opacity="0.8"/>
+        <circle cx="130" cy="160" r="2" fill="#c8b87a" opacity="0.8"/>
+        <!-- Rising arrows to show motion -->
+        <path d="M 100 165 L 100 85" fill="none" stroke="#c8b87a" stroke-width="1" opacity="0.4" stroke-dasharray="2,2"/>
+      </svg>
+    `,
+    refraction: `
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Prism triangle -->
+        <polygon points="50,160 150,160 100,40" fill="none" stroke="#7eb8c9" stroke-width="2"/>
+        <!-- Incident ray -->
+        <line x1="60" y1="30" x2="95" y2="100" stroke="#c8b87a" stroke-width="2"/>
+        <!-- Refracted rays (spectrum) -->
+        <line x1="100" y1="160" x2="130" y2="185" stroke="#d4537e" stroke-width="1.5" opacity="0.8"/>
+        <line x1="100" y1="160" x2="125" y2="188" stroke="#7eb8c9" stroke-width="1.5" opacity="0.8"/>
+        <line x1="100" y1="160" x2="120" y2="186" stroke="#c8b87a" stroke-width="1.5" opacity="0.8"/>
+        <!-- Normal line -->
+        <line x1="100" y1="100" x2="100" y2="160" stroke="#8a8480" stroke-width="0.5" stroke-dasharray="2,2" opacity="0.5"/>
+        <!-- Light indicator -->
+        <circle cx="95" cy="95" r="2" fill="#c8b87a"/>
+      </svg>
+    `,
+    chaos: `
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Two pendulums (simplified double pendulum) -->
+        <g>
+          <!-- First pivot -->
+          <circle cx="100" cy="30" r="3" fill="#7eb8c9"/>
+          <!-- First arm -->
+          <line x1="100" y1="30" x2="85" y2="90" stroke="#7eb8c9" stroke-width="2"/>
+          <circle cx="85" cy="90" r="5" fill="#7eb8c9" opacity="0.7"/>
+          <!-- Second arm from first mass -->
+          <line x1="85" y1="90" x2="70" y2="150" stroke="#7eb8c9" stroke-width="2"/>
+          <circle cx="70" cy="150" r="5" fill="#7eb8c9" opacity="0.5"/>
+        </g>
+        <!-- Chaotic trajectory showing sensitivity -->
+        <path d="M 65 155 Q 60 160 65 170 Q 75 175 70 180 Q 68 190 75 185" fill="none" stroke="#c8b87a" stroke-width="1.5" opacity="0.6"/>
+        <!-- Motion indicators -->
+        <path d="M 70 148 L 65 152" stroke="#c8b87a" stroke-width="1" opacity="0.5"/>
+      </svg>
+    `,
+    materials: `
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Bamboo stalk -->
+        <rect x="70" y="40" width="18" height="130" fill="none" stroke="#7eb8c9" stroke-width="2"/>
+        <!-- Nodes (segments) -->
+        <line x1="70" y1="70" x2="88" y2="70" stroke="#7eb8c9" stroke-width="1.5" opacity="0.7"/>
+        <line x1="70" y1="100" x2="88" y2="100" stroke="#7eb8c9" stroke-width="1.5" opacity="0.7"/>
+        <line x1="70" y1="130" x2="88" y2="130" stroke="#7eb8c9" stroke-width="1.5" opacity="0.7"/>
+        <!-- Fiber directions (showing strength) -->
+        <line x1="75" y1="50" x2="83" y2="55" stroke="#c8b87a" stroke-width="1" opacity="0.5"/>
+        <line x1="75" y1="65" x2="83" y2="68" stroke="#c8b87a" stroke-width="1" opacity="0.5"/>
+        <line x1="75" y1="95" x2="83" y2="100" stroke="#c8b87a" stroke-width="1" opacity="0.5"/>
+        <line x1="75" y1="125" x2="83" y2="132" stroke="#c8b87a" stroke-width="1" opacity="0.5"/>
+        <!-- Leaves -->
+        <path d="M 85 55 Q 95 50 100 60" fill="none" stroke="#7eb8c9" stroke-width="1.5" opacity="0.6"/>
+        <path d="M 88 85 Q 98 75 105 85" fill="none" stroke="#7eb8c9" stroke-width="1.5" opacity="0.6"/>
+        <path d="M 85 150 Q 95 145 100 155" fill="none" stroke="#7eb8c9" stroke-width="1.5" opacity="0.6"/>
+      </svg>
+    `
+  };
+  
+  // Load user blogs from localStorage
+  loadUserBlogs();
+  
+  // Combine hardcoded blogs with user-generated blogs (user blogs first)
+  const allBlogs = [...userGeneratedBlogs, ...blogData];
+  
+  // Render blog interactive elements
+  allBlogs.forEach((blog, index) => {
+    const element = document.createElement('div');
+    element.className = 'blog-interactive-element';
+    element.setAttribute('data-blog-id', blog.id);
+    element.style.animationDelay = `${index * 0.4}s`;
+    
+    // Use custom SVG if available, otherwise use predefined schematics
+    let svgContent = '';
+    if (blog.svg) {
+      svgContent = blog.svg;
+    } else if (svgSchematics[blog.id]) {
+      svgContent = svgSchematics[blog.id];
+    }
+    
+    element.innerHTML = `
+      ${svgContent}
+      <div class="blog-element-label">${blog.title}</div>
+    `;
+    
+    element.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openBlogModal(blog);
+    });
+    
+    blogElements.appendChild(element);
+  });
+  
+  // Attach to physics interaction system - reuse the info card
+  attachBlogInteractions();
+}
+
+function attachBlogInteractions() {
+  const elements = document.querySelectorAll('.blog-interactive-element');
+  let infoCard = document.querySelector('.info-card');
+  
+  if (!infoCard) {
+    infoCard = document.createElement('div');
+    infoCard.className = 'info-card';
+    document.body.appendChild(infoCard);
+  }
+
+  elements.forEach(element => {
+    element.addEventListener('mouseenter', (e) => {
+      const blogId = element.getAttribute('data-blog-id');
+      // Search in user-generated blogs first, then hardcoded blogs
+      const blog = userGeneratedBlogs.find(b => b.id === blogId) || blogData.find(b => b.id === blogId);
+      
+      if (blog) {
+        infoCard.innerHTML = `
+          <div class="info-card-title">${blog.title}</div>
+          <div style="font-size: 12px; color: var(--muted); margin-bottom: 8px;">${blog.subtitle}</div>
+          <div>${blog.description}</div>
+          <div style="margin-top: 12px; font-size: 12px; color: var(--accent);">Click to read more →</div>
+        `;
+        
+        // Temporarily show to measure size
+        infoCard.classList.add('visible');
+        infoCard.style.left = '0px';
+        infoCard.style.top = '0px';
+        
+        // Force reflow to get actual dimensions
+        infoCard.offsetHeight;
+        
+        const cardRect = infoCard.getBoundingClientRect();
+        const elementRect = element.getBoundingClientRect();
+        const cardWidth = cardRect.width || 350;
+        const cardHeight = cardRect.height || 180;
+        
+        const scrollX = window.scrollX || window.pageXOffset;
+        const scrollY = window.scrollY || window.pageYOffset;
+        
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        // Start with centered position above element
+        let x = elementRect.left + elementRect.width / 2 - cardWidth / 2;
+        let y = elementRect.top - cardHeight - 20;
+        
+        const padding = 15;
+        
+        // Check bounds and adjust position
+        
+        // TOP: If popup would go above viewport
+        if (y < padding) {
+          // Try placing below element
+          y = elementRect.bottom + 20;
+          
+          // If still doesn't fit, place at top with padding
+          if (y + cardHeight > viewportHeight - padding) {
+            y = padding;
+          }
+        }
+        
+        // BOTTOM: If popup would go below viewport
+        if (y + cardHeight > viewportHeight - padding) {
+          // Move above if space available
+          if (elementRect.top - cardHeight - 20 > padding) {
+            y = elementRect.top - cardHeight - 20;
+          } else {
+            y = viewportHeight - cardHeight - padding;
+          }
+        }
+        
+        // LEFT: If popup would go off left edge
+        if (x < padding) {
+          x = padding;
+        }
+        
+        // RIGHT: If popup would go off right edge
+        if (x + cardWidth > viewportWidth - padding) {
+          x = viewportWidth - cardWidth - padding;
+        }
+        
+        // Ensure card stays within horizontal bounds as final safeguard
+        x = Math.max(padding, Math.min(x, viewportWidth - cardWidth - padding));
+        y = Math.max(padding, Math.min(y, viewportHeight - cardHeight - padding));
+        
+        infoCard.style.left = x + 'px';
+        infoCard.style.top = y + 'px';
+      }
+    });
+
+    element.addEventListener('mouseleave', () => {
+      infoCard.classList.remove('visible');
+    });
+  });
+}
+
+function openBlogModal(blog) {
+  let modal = document.getElementById('blog-modal');
+  if (!modal) {
+    createBlogModal();
+    modal = document.getElementById('blog-modal');
+  }
+  
+  const content = document.querySelector('.blog-modal-content');
+  if (!content) return;
+  
+  // Delete button for user-generated blogs
+  let deleteButton = '';
+  if (blog.userGenerated) {
+    deleteButton = `<button class="blog-modal-delete" onclick="deleteUserBlog('${blog.id}')">🗑 Delete</button>`;
+  }
+  
+  // References section (only if they exist)
+  let referencesSection = '';
+  if (blog.references && blog.references.length > 0) {
+    referencesSection = `
+      <div class="blog-modal-references">
+        <strong>Key References:</strong>
+        <ul>
+          ${blog.references.map(ref => `<li>${ref}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+  }
+  
+  content.innerHTML = `
+    <button class="blog-modal-close" onclick="closeBlogModal()">&times;</button>
+    ${deleteButton}
+    <div class="blog-modal-header">
+      <div>
+        <div class="blog-modal-subtitle">${blog.subtitle}</div>
+        <div class="blog-modal-title">${blog.title}</div>
+      </div>
+    </div>
+    <div class="blog-modal-body">
+      ${blog.content}
+      ${referencesSection}
+    </div>
+  `;
+  
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeBlogModal() {
+  const modal = document.getElementById('blog-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+  }
+}
+
+function createBlogModal() {
+  const modal = document.createElement('div');
+  modal.id = 'blog-modal';
+  modal.className = 'blog-modal';
+  modal.innerHTML = '<div class="blog-modal-content"></div>';
+  
+  // Close modal when clicking outside content
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeBlogModal();
+    }
+  });
+  
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeBlogModal();
+    }
+  });
+  
+  document.body.appendChild(modal);
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initPhysicsInteractive();
+    initBlog();
+  });
+} else {
+  initPhysicsInteractive();
+  initBlog();
+}
+</script>
 
 
 <!-- MARQUEE -->
@@ -1052,6 +2991,17 @@
       <div class="gallery-desc">Travel, photography, moments</div>
     </a>
 
+  </div>
+</section>
+
+<!-- WHAT'S IN MY BRAIN - BLOG -->
+<section id="blog" class="blog-section">
+  <div class="section-label">Blog</div>
+  <h2 class="section-title">What's in<br><em>My Brain</em></h2>
+  <p class="section-intro">Interactive explorations of physics concepts through visual demonstrations and detailed explanations.</p>
+  
+  <div class="blog-grid" id="blog-elements">
+    <!-- Dynamically populated by JavaScript -->
   </div>
 </section>
 
